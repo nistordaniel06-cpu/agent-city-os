@@ -30,7 +30,7 @@ const VALID_ROLES={
 };
 const developer=createDeveloper({githubToken:process.env.GITHUB_TOKEN||'',githubOwner:process.env.GITHUB_OWNER||'',openaiKey:API_KEY,apiBase:API_BASE,model:MODEL});
 const hunter=createHunter({openaiKey:API_KEY,freelancerToken:process.env.FLN_OAUTH_TOKEN||'',apiBase:API_BASE,model:MODEL});
-const STATIC={'/':['index.html','text/html; charset=utf-8'],'/index.html':['index.html','text/html; charset=utf-8'],'/multiproject.js':['multiproject.js','application/javascript; charset=utf-8'],'/hunter-ui.js':['hunter-ui.js','application/javascript; charset=utf-8']};
+const STATIC={'/':['index.html','text/html; charset=utf-8'],'/index.html':['index.html','text/html; charset=utf-8'],'/multiproject.js':['multiproject.js','application/javascript; charset=utf-8'],'/hunter-ui.js':['hunter-ui.js','application/javascript; charset=utf-8'],'/leads-daily.json':['public/leads-daily.json','application/json; charset=utf-8']};
 function send(res,status,data,headers={}){res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','X-Frame-Options':'DENY','Referrer-Policy':'no-referrer',...headers});res.end(JSON.stringify(data))}
 function sameToken(provided){if(!provided||!ACCESS_TOKEN)return false;const a=Buffer.from(provided),b=Buffer.from(ACCESS_TOKEN);return a.length===b.length&&crypto.timingSafeEqual(a,b)}
 function validatePayload(d){

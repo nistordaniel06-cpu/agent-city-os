@@ -128,3 +128,17 @@ Documentație oficială pentru autorizare și API:
 5. Pentru draft PR prin Developer AI, configurează tokenul GitHub strict pentru repository-urile selectate, conform instrucțiunilor v4. Conectarea GitHub din ChatGPT nu se propagă automat serverului din ZIP.
 
 **Stare:** implementare și teste locale finalizate, fără credentiale reale în arhivă, fără deploy public și fără transmiterea de oferte. Conectarea contului Freelancer.com are nevoie de aprobarea și autentificarea ta. Nu promitem că anunțurile sunt încă deschise; verifică întotdeauna site-ul sursă. Backend-ul nu are worker permanent și nu monitorizează de la sine în fundal.
+
+
+## Agent City Hunter — client discovery (V6)
+
+New **Hunter daily client signals** action runs automatically once a day (07:17 UTC) or when scouting source code/workflow changes are pushed to `main`. It reads fixed public sources: Reddit r/forhire RSS **[Hiring]/[Task]/[Paid]** posts and Hacker News search via the documented Algolia HN API. No scraping private accounts, mass messaging, AI key, or Freelancer credentials. Candidates are **unverified leads**, not signed contracts.
+
+- Results: `public/leads-daily.json` (a **public** report in this **public** GitHub repository). Excerpted email addresses are redacted.
+- In the UI, open **Hunter AI → 🎯 Caută clienți (zilnic)** to filter/sort and save relevant signals.
+- Github Actions: `.github/workflows/hunter-daily.yml` (`workflow_dispatch` is supported). If the Action cannot commit, enable `Workflow permissions: Read and write` in repository Settings → Actions → General; do not supply tokens to the chat.
+- If all providers fail, the previous report is preserved and Actions reports a failure. Partial upstream errors are included in the digest.
+- **Nobody is contacted automatically.** Every lead must be checked at the source and the owner must approve any offer.
+- The daily workflow does not run AI generation: this is intentionally low-cost, read-only discovery. Freelancer.com remains optional via OAuth on the private server.
+
+**Business strategy:** use client projects for near-term revenue, and turn repeated verified client pain points into subscription products. No guaranteed clients or income. Vercel Hobby is not licensed for commercial production use: review the hosting plan before taking payments.

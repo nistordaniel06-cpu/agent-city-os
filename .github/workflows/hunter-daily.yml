@@ -1,0 +1,35 @@
+name: Hunter daily client signals
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/hunter-daily.yml'
+      - 'lead-scout.js'
+      - 'scripts/lead-scout-daily.js'
+  schedule:
+    - cron: '17 7 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: hunter-daily
+  cancel-in-progress: false
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9f # v4.2.2
+        with:
+          persist-credentials: true
+      - name: Collect public leads, read-only
+        run: node scripts/lead-scout-daily.js
+      - name: Store the public daily digest
+        run: |
+          git add public/leads-daily.json
+          if ! git diff --cached --quiet; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git commit -m 'chore(hunter): refresh public lead signals'
+            git push origin HEAD:main
+          fi

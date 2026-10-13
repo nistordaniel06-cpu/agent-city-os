@@ -12,7 +12,7 @@ function hunterStore(){hunterSaved=hunterSaved.slice(-150);setLocal(HUNTER_KEY,J
 function hunterShort(id){return hunterSaved.find(x=>x.id===id)}
 function hunterCard(o,mode='live'){
  const s=mode==='saved',title=esc(o.title),company=esc(o.company||'Companie nespecificată'),source=esc(o.source||'Manual'),link=safeUrl(o.url||'');
- const kind=({ 'contract-mention':'Mențiune contract/freelance','employment-mention':'Mențiune angajare',unspecified:'Tip neconfirmat','marketplace-project':'Proiect freelance (platformă)'})[o.kind]||'Tip neconfirmat';
+ const kind=({ 'contract-mention':'Mențiune contract/freelance','employment-mention':'Mențiune angajare',unspecified:'Tip neconfirmat','marketplace-project':'Proiect freelance (platformă)','request-for-work':'Cerere publică [Hiring] (neconfirmată)','lead-signal':'Posibilă nevoie de servicii (neconfirmată)'})[o.kind]||'Tip neconfirmat';
  const freshness=o.postedAt?new Date(o.postedAt).toLocaleDateString('ro-RO'):'Dată necunoscută';
  const idx=mode==='saved'?hunterSaved.findIndex(x=>x.id===o.id):hunterLatest.findIndex(x=>x.id===o.id);
  return `<article class="hunterItem"><div class="hunterMeta"><span>${source}</span><span>${esc(kind)}</span><span>${esc(freshness)}</span>${!s?`<span>Potrivire orientativă ${Number(o.score||0)}/100</span>`:''}</div>
@@ -36,13 +36,49 @@ function hunterBindings(){
  document.querySelectorAll('[data-hunter-state]').forEach(b=>b.onclick=()=>{let x=hunterSaved[Number(b.dataset.hunterState)];if(!x)return;const states=['saved','drafted','approved','rejected'];x.state=states[(states.indexOf(x.state)+1)%states.length];hunterStore();hunterBoard()});
 }
 function hunterBoard(){
- modal('Hunter AI · Sales Desk','OPORTUNITĂȚI · FĂRĂ TRIMITERE AUTOMATĂ',`<p class="subtitle">Identifică anunțuri remote și pregătește propuneri pentru orice industrie. <b>Căutarea live necesită serverul privat.</b> Anunțurile nu sunt garantat freelance și trebuie verificate la sursă. Datele salvate rămân doar în acest browser.</p>
+ modal('Hunter AI · Sales Desk','OPORTUNITĂȚI · FĂRĂ TRIMITERE AUTOMATĂ',`<p class="subtitle">Agent City caută zilnic semnale publice de clienți și poate pregăti oferte pentru orice industrie. <b>Lista zilnică funcționează fără chei API.</b> Căutarea avansată cere configurarea serverului. Anunțurile nu sunt garantat freelance și trebuie verificate la sursă. Datele salvate rămân doar în acest browser.</p>
  <div class="hunterStats"><span>📌 ${hunterSaved.length} salvate</span><span>✍️ ${hunterSaved.filter(x=>x.output).length} oferte</span><span>✅ ${hunterSaved.filter(x=>x.state==='approved').length} aprobate manual</span></div>
- <div class="projectToolbar"><button class="smallBtn approve" id="hunterSearchOpen">🔎 Caută anunțuri publice</button><button class="smallBtn" id="hunterManualOpen">+ Adaugă anunț</button><button class="smallBtn" id="hunterExport">↓ Exportă oportunități</button></div>
+ <div class="projectToolbar"><button class="smallBtn approve" id="hunterLeadsOpen">🎯 Caută clienți (zilnic)</button><button class="smallBtn" id="hunterSearchOpen">🔎 Alte anunțuri</button><button class="smallBtn" id="hunterManualOpen">+ Adaugă anunț</button><button class="smallBtn" id="hunterExport">↓ Exportă oportunități</button></div>
  <h3 class="sectionTitle">LISTA TA DE OPORTUNITĂȚI</h3><div class="hunterList">${hunterSaved.slice().reverse().map(o=>hunterCard(o,'saved')).join('')||'<p class="emptyState">Nu ai salvat oportunități. Poți căuta în feedurile publice sau poți adăuga manual un anunț.</p>'}</div>
  <p class="note">Hunter nu trimite oferte, nu deschide conturi și nu acceptă contracte. „Aprobat” înseamnă doar că ai verificat textul pentru trimitere manuală.</p>`);
- $('#hunterSearchOpen').onclick=hunterSearchForm;$('#hunterManualOpen').onclick=hunterManualForm;$('#hunterExport').onclick=hunterExport;hunterBindings();
+ $('#hunterLeadsOpen').onclick=hunterLeadsOpen;$('#hunterSearchOpen').onclick=hunterSearchForm;$('#hunterManualOpen').onclick=hunterManualForm;$('#hunterExport').onclick=hunterExport;hunterBindings();
  // Cards are rendered newest first; normalize handler indexes using data-index values from hunterCard.
+}
+// Daily leads are public read-only signals produced by GitHub Actions: no token, no outreach.
+let hunterDailyReport = null;
+async function hunterLeadsOpen(){
+ modal('Hunter · Caută clienți','RAPORT PUBLIC · FĂRĂ CONTACTARE',`<p class="subtitle">Încarc lista zilnică de cereri și semnale publice. Nu reprezintă contracte confirmate.</p>`);
+ try {
+  const response=await fetch('/leads-daily.json',{cache:'no-store'});
+  if(!response.ok)throw Error('Raportul nu a fost publicat încă: HTTP '+response.status);
+  const report=await response.json();
+  if(!report || !Array.isArray(report.results) || report.schema!==1)throw Error('Formatul raportului este invalid.');
+  hunterDailyReport=report;
+  hunterLeadsDisplay('all');
+ }catch(e){
+  modal('Hunter · Caută clienți','RAPORT NEDISPONIBIL',`<p class="note">${esc(String(e.message))}</p><p class="subtitle">Verifică raportul de rulare din <a href="https://github.com/nistordaniel06-cpu/agent-city-os/actions/workflows/hunter-daily.yml" target="_blank" rel="noopener noreferrer">GitHub Actions</a>. Lista este actualizată prin workflowul programat, nu prin trimiterea de mesaje automate.</p><button class="smallBtn" id="hunterLeadsBack">← Înapoi</button>`);
+  $('#hunterLeadsBack').onclick=hunterBoard;
+ }
+}
+function hunterLeadsDisplay(topic='all'){
+ const report=hunterDailyReport;
+ if(!report)return hunterLeadsOpen();
+ const items=report.results.filter(x=>x&&typeof x.id==='string'&&typeof x.title==='string'&&typeof x.url==='string'&&Array.isArray(x.tags));
+ const filtered=topic==='all'?items:items.filter(x=>x.tags.includes(topic));
+ hunterLatest=filtered.slice(0,60);
+ hunterCheckedAt=report.generatedAt||'';
+ hunterErrors=report.errors||[];
+ const generated=report.generatedAt?esc(new Date(report.generatedAt).toLocaleString('ro-RO')):'Nu a rulat încă';
+ modal('Hunter · Clienți potențiali','CERERI PUBLICE · NEVERIFICATE',`<p class="subtitle"><b>Raport din ${generated}.</b> ${filtered.length} semnale relevante din ${items.length} total. Cererile Reddit marcate [Hiring] au un indiciu mai puternic decât comentariile Hacker News, dar niciuna nu garantează un client sau un buget.</p>
+ <label class="field">Domeniu <select id="hunterLeadsTopic"><option value="all">Toate industriile</option>${Object.entries(HUNTER_FILTERS).filter(([k])=>k!=='all').map(([k,v])=>`<option value="${k}" ${topic===k?'selected':''}>${esc(v)}</option>`).join('')}</select></label>
+ <div class="projectToolbar"><button class="smallBtn" id="hunterLeadsReload">↻ Reîncarcă raportul</button><button class="smallBtn" id="hunterLeadsSaved">📌 Oportunități salvate</button><a class="smallBtn" href="https://github.com/nistordaniel06-cpu/agent-city-os/actions/workflows/hunter-daily.yml" target="_blank" rel="noopener noreferrer">Vezi automatizarea ↗</a></div>
+ ${hunterErrors.length?`<p class="note">Surse temporar indisponibile: ${esc(hunterErrors.join('; ').slice(0,500))}</p>`:''}
+ <div class="hunterList">${hunterLatest.slice(0,35).map(x=>hunterCard(x,'live')).join('')||'<p class="emptyState">Încă nu avem cereri relevante în filtrul ales. Poți schimba domeniul sau poți rula manual workflowul GitHub. Nu inventăm oportunități.</p>'}</div>
+ <p class="note">Lista este publică pe GitHub și se actualizează printr-o verificare zilnică programată. Verifică anunțul, eligibilitatea și bugetul la sursă. Agent City nu trimite mesaje, oferte sau aplicații fără tine.</p>`);
+ $('#hunterLeadsTopic').onchange=e=>hunterLeadsDisplay(e.target.value);
+ $('#hunterLeadsReload').onclick=hunterLeadsOpen;
+ $('#hunterLeadsSaved').onclick=hunterBoard;
+ hunterBindings();
 }
 function hunterSearchForm(){
  modal('Căutare Hunter','SURSE OFICIALE · DOAR CITIRE',`<p class="subtitle">Surse: <a href="https://remoteok.com" target="_blank" rel="noopener noreferrer">Remote OK</a> și <a href="https://weworkremotely.com" target="_blank" rel="noopener noreferrer">We Work Remotely</a> și <a href="https://www.freelancer.com/jobs/" target="_blank" rel="noopener noreferrer">Freelancer.com</a> (necesită OAuth server-side). RSS/API oficiale, cu atribuire. Nu căutăm în conturi private sau site-uri care interzic automatizarea.</p>
