@@ -30,8 +30,14 @@ function httpsSourceLink(value, hostname) {
 }
 function iso(s) { const d = new Date(s); return Number.isFinite(d.getTime()) ? d.toISOString() : null; }
 function categories(text) {
-  const t = text.toLowerCase();
-  return Object.entries(TOPICS).filter(([, keys]) => keys.some(k => t.includes(k))).map(([key]) => key);
+  const t = String(text).toLowerCase();
+  // Word boundaries prevent false leads from app->'apply', design->'InDesign',
+  // ui->'quite' or seo->'reason'. An empty list is better than noise.
+  const termMatch = word => {
+    const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+');
+    return new RegExp('(?:^|[^a-z0-9])' + escaped + '(?=$|[^a-z0-9])', 'i').test(t);
+  };
+  return Object.entries(TOPICS).filter(([, keys]) => keys.some(termMatch)).map(([key]) => key);
 }
 function digest(s) { return crypto.createHash('sha256').update(s).digest('hex').slice(0, 16); }
 function tagValue(entry, tag) {
@@ -50,7 +56,10 @@ function normalizeReddit(xml, now = Date.now()) {
     const date = iso(clean(tagValue(e, 'updated') || tagValue(e, 'published'), 100));
     if (!date || now - Date.parse(date) > 45 * 86400000 || Date.parse(date) > now + 86400000) return null;
     const summary = clean(tagValue(e, 'content') || tagValue(e, 'summary'), 430);
-    const tags = categories(title + ' ' + summary);
+    // Prioritize projects where the title itself names a service we can deliver.
+    // Omit surveys, testimonial filming, academic studies, and similar tasks.
+    if (/\b(selfie|film yourself|college student|survey|paid study|focus group|product testing|video testimonial)\b/i.test(title)) return null;
+    const tags = categories(title);
     if (!tags.length) return null;
     return {id: 'reddit:' + digest(url), source: 'Reddit r/forhire', title, company: 'Autorul anunțului (neverificat)', url,
       description: summary, tags, postedAt: date, kind: 'request-for-work', score: Math.min(92, 50 + 7 * tags.length),
@@ -65,10 +74,15 @@ function normalizeHN(json, now = Date.now()) {
     if (!date || now - Date.parse(date) > 45 * 86400000 || Date.parse(date) > now + 86400000) return null;
     const description = clean(h.comment_text || h.story_text || '', 430);
     const title = clean(h.story_title || h.title || description.slice(0, 110), 200);
-    const s = (description + ' ' + title).toLowerCase();
-    // Avoid presenting job seekers, recruiters, or generic discussions as clients.
-    if (!/\b(looking for|need|seeking|hire|hiring|pay for|need help with)\b/.test(s) ||
-       /\b(i am available for hire|i'm available for hire|looking for (?:a|my) job|job seeking)\b/.test(s)) return null;
+    const s = description.toLowerCase();
+    // Generic technical discussions and HN recruitment threads are not clients.
+    if (/who (?:is hiring|wants to be hired)/i.test(title)) return null;
+    if (/\b(i am available for hire|i'm available for hire|looking for (?:a|my) job|job seeking|full.time position)\b/i.test(s)) return null;
+    const buyerIntent = /\b(?:i|we|our team|my company|my business)\s+(?:(?:am|are)\s+)?(?:looking for|seeking|hiring)\s+(?:a |an |someone|help|developer|freelancer|agency|web)/i.test(s)
+      || /\b(?:i|we|our team|my company|my business)\s+need\s+(?:someone|a developer|a designer|an agency|a freelancer|help with|a website|a web app|an app|a chatbot|automation|automating|an automation)/i.test(s)
+      || /\b(?:we|i)\s+(?:can|would)\s+pay\s+(?:someone|for)\b/i.test(s)
+      || /\b(?:can anyone|anyone available to)\s+.{0,70}\b(?:build|create|automate|develop)\b/i.test(s);
+    if (!buyerIntent) return null;
     const tags = categories(s);
     if (!tags.length) return null;
     const url = httpsSourceLink('https://news.ycombinator.com/item?id=' + h.objectID, 'news.ycombinator.com');

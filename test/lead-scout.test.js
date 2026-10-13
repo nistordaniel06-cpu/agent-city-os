@@ -43,3 +43,16 @@ test('fail gracefully if every feed is unavailable',async()=>{
  const out=await scout({fetcher:async()=>{throw Error('blocked')},now});
  assert.equal(out.results.length,0);assert.equal(out.errors.length,4);
 });
+
+test('whole-word industry classification rejects accidental substrings',()=>{
+ const {categories}=require('../lead-scout');
+ assert.deepEqual(categories('Simple Adobe InDesign Newsletter'),[]);
+ assert.deepEqual(categories('The website needs an automation'),['web','automation']);
+});
+test('generic HN discussion about needing a feature is not a client lead',()=>{
+ const discussions={hits:[
+  {objectID:'55112',created_at:'2026-10-12T10:00:00Z',story_title:'New Apple TV 4K',comment_text:'I need to set up a recurring backup-to-external-HD automation for it.'},
+  {objectID:'55113',created_at:'2026-10-12T10:00:00Z',story_title:'Ask HN: Who is hiring? (October 2026)',comment_text:'We are looking for a developer full-time.'}
+ ]};
+ assert.equal(normalizeHN(discussions,now).length,0);
+});
