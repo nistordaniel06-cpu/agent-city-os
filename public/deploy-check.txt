@@ -1,0 +1,5 @@
+Agent City OS deployment sync probe
+Branch: main
+Created: 2026-10-14
+Expected auto deployment: Vercel Git integration
+This file contains no secrets.
