@@ -1,12 +1,31 @@
 # AGENT CITY OS v5 — Universal AI Agency HQ
 
 **Un singur oraș interactiv pentru multe proiecte independente**, de la jocuri la e-commerce, aplicații, automatizări și proiecte freelance. Proiect separat, fără schimbări în Barbercraft, SalonOS sau alte repo-uri.
+## Groq AI — motor principal fără dependență de creditele OpenAI
+
+Agent City OS suportă **Groq** și **OpenAI** printr-un adaptor comun pentru misiunile AI și ofertele Hunter. Developer AI folosește același furnizor pe serverul local, dar crearea PR-urilor rămâne **dezactivată pe Vercel** până la stocarea persistentă a aprobărilor. Agenții nu trimit mesaje sau aplicații automat.
+
+### Activează Groq în Vercel (echipa 4-men, proiect agent-city-os)
+
+1. Creează o cheie în [Groq Console — API Keys](https://console.groq.com/keys). **Nu trimite cheia în chat și nu o include în repo.**
+2. În Vercel → Project → Settings → Environment Variables → **Production**, adaugă:
+   - `AI_PROVIDER=groq` — alegerea explicită a motorului (fără fallback către OpenAI).
+   - `GROQ_API_KEY` — valoarea cheii tale Groq, **Sensitive**.
+   - Opțional `GROQ_MODEL=openai/gpt-oss-20b` — modelul implicit; alege numai modele disponibile în contul tău.
+3. Fă **Redeploy** la producție după ce ai salvat toate variabilele. Cheia OpenAI rămâne separată și nu este apelată când alegi Groq. `AGENT_CITY_ACCESS_TOKEN` rămâne obligatoriu pentru a proteja operațiunile private.
+4. Deschide `/api/health`: trebuie să vezi `aiProvider:"groq"` și `aiConfigured:true`. Endpointul verifică doar configurarea, **nu validitatea cheii**. Pentru test real, execută manual o misiune sau un draft Hunter.
+5. Contul gratuit Groq are limite de cereri/tokenuri; la 429 aplicația arată un mesaj despre limită și **nu încearcă OpenAI**. Un apel real necesită cheia și un model activ, iar planul/limitele se pot schimba.
+
+Poți reveni la OpenAI numai când alegi explicit `AI_PROVIDER=openai` și configurezi billing API. Nu există comutare automată către modele cu plată.
+
+Documentație Groq: [compatibilitate API](https://console.groq.com/docs/openai), [modele](https://console.groq.com/docs/models), [limite](https://console.groq.com/docs/rate-limits).
+
 
 ## Ce există în v4
 
 - **Hunter AI — Oportunități:** citește la cerere feedul public JSON Remote OK și RSS We Work Remotely; separă mențiunile de contracte de angajări, calculează scor euristic, salvează shortlist, permite introducere manuală a anunțurilor și generează oferte-text prin AI cu confirmare umană. Nu aplică, nu contactează și nu trimite mesaje. Feedurile pot conține în special POSTURI, nu contracte freelance.
 - Orașul interactiv și gestionarea locală a proiectelor, misiunilor și agenților, cu backup JSON.
-- Agenți text prin OpenAI API la cerere (planificare, cercetare, marketing, QA, Developer etc.).
+- Agenți text prin Groq / OpenAI API la cerere (planificare, cercetare, marketing, QA, Developer etc.).
 - **Developer → GitHub (MVP funcțional la configurare):** selectezi un proiect cu un repo GitHub, creezi o misiune cu rol `Developer`, specifici 1–3 fișiere existente, agentul citește DOAR acele fișiere, AI propune conținutul complet schimbat, tu examinezi propunerea și trebuie să apeși **Aprob și creez draft PR**, apoi să confirmi dialogul. Serverul creează un branch nou, un commit, apoi un **draft pull request**. Nu schimbă `main`, nu face merge și nu face deploy.
 - Înainte de publicare, serverul verifică dacă branch-ul de bază a rămas la același commit; în caz contrar respinge propunerea.
 - Teste `node --test`, inclusiv simularea completă prepare → explicit approve → draft PR.
