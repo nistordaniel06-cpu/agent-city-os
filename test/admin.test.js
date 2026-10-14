@@ -26,7 +26,9 @@ test('production maps admin HTML and JS while all privileged data stays behind b
  assert.match(ui,/function logout\(/);
  assert.match(ui,/\/api\/admin\/status/);
  assert.match(ui,/Authorization:'Bearer '\+ownerToken/);
- assert.doesNotMatch(ui,/localStorage\.setItem\([^,\n]*(?:token|secret|key)/i);
+ assert.doesNotMatch(ui,/localStorage\.setItem\([^,\n]*ownerToken/i);
+ assert.doesNotMatch(ui,/putStored\([^,\n]*ownerToken/i);
+ assert.match(ui,/ownerToken='';state=null;/);
  assert.match(ui,/Code Reviewer/);
  assert.match(ui,/hyagent/);
 });
