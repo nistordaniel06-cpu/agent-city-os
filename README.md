@@ -1,6 +1,33 @@
 # AGENT CITY OS v5 — Universal AI Agency HQ
 
 **Un singur oraș interactiv pentru multe proiecte independente**, de la jocuri la e-commerce, aplicații, automatizări și proiecte freelance. Proiect separat, fără schimbări în Barbercraft, SalonOS sau alte repo-uri.
+
+## 🛡️ Agent Code Reviewer — OpenCodeReview + Groq
+
+**OpenCodeReview** este un utilitar specializat în analiza codului, nu un model AI suplimentar. Acest proiect folosește versiunea din fork-ul `nistordaniel06-cpu/open-code-review` (GitHub Action fixată la SHA) cu `@alibaba-group/open-code-review` fixat la versiunea `1.13.0`, iar **Groq** furnizează modelul de analiză `openai/gpt-oss-20b`.
+
+- Workflow: [Code Reviewer (OpenCodeReview + Groq)](https://github.com/nistordaniel06-cpu/agent-city-os/actions/workflows/code-review-groq.yml), fișier `.github/workflows/code-review-groq.yml`.
+- Evenimente: PR nou, actualizat, redeschis sau scos din draft, numai pentru branch-uri **din același repository** (nu din fork-uri). Nu rulează codul propus de PR și nu execută merge.
+- Rezultat: observații de revizuire și rezumat pe PR, în GitHub. Nu considera `success` drept confirmarea că nu există defecte; verifică observațiile manual.
+- În aplicația Agent City OS apare un agent suplimentar **OpenCodeReview** → `PR Reviews` cu PR-urile deschise și ultimele rulări GitHub Actions, numai pentru `agent-city-os` momentan. Datele sunt publice, citite din GitHub API, și se pot limita de rate limiting.
+
+### Pas obligatoriu — cheia Groq pentru GitHub Actions
+
+Cheia Groq din **Vercel** este disponibilă aplicației web, dar **nu și GitHub Actions**. Adaugă manual un secret separat, fără a-l partaja în chat:
+
+1. Deschide [GitHub → agent-city-os → Actions Secrets](https://github.com/nistordaniel06-cpu/agent-city-os/settings/secrets/actions).
+2. Apasă **New repository secret** și creează `OCR_GROQ_API_KEY` cu cheia Groq din contul tău. Folosește o cheie separată dacă dorești să poți revoca accesul doar acestui reviewer.
+3. La următorul PR eligibil, workflow-ul rulează OpenCodeReview și lasă observații pe PR. Fără secret, workflow-ul **eșuează explicit**, fără a expune sau încerca automat cheia OpenAI.
+4. Modelul și bugetul sunt configurate în workflow: un singur review la un moment dat per PR, `max_tokens_budget: 8000`, fără retry automat către un furnizor cu plată. Cotele și disponibilitatea Groq pot limita sau opri temporar analiza.
+
+### Aprobarea înainte de merge
+
+**Nici agentul și nici workflow-ul nu fac merge automat**. O persoană verifică observațiile și apasă manual `Merge pull request` numai după ce acceptă schimbările.
+
+Pentru a **impune tehnic** această regulă și altor colaboratori/integrări, activează în [GitHub Rulesets](https://github.com/nistordaniel06-cpu/agent-city-os/settings/rules) o regulă pe `main`: Require a pull request; Require status checks (`test` și Code Reviewer, după prima rulare); Require approvals (1+ când există alt reviewer autorizat); restricționează bypass-urile. Această politică **nu este configurată automat** de integrare. Un utilizator GitHub nu poate aproba propriul PR cu funcția standard de review, deci planifică separat cine aprobă, dacă impui 1+ aprobări.
+
+**Limită MVP:** integrarea nu instalează workflow-uri și pe Barbercraft, SalonOS sau alte repo-uri. Nu citește depozite private în interfața publică.
+
 ## Groq AI — motor principal fără dependență de creditele OpenAI
 
 Agent City OS suportă **Groq** și **OpenAI** printr-un adaptor comun pentru misiunile AI și ofertele Hunter. Developer AI folosește același furnizor pe serverul local, dar crearea PR-urilor rămâne **dezactivată pe Vercel** până la stocarea persistentă a aprobărilor. Agenții nu trimit mesaje sau aplicații automat.
