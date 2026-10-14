@@ -124,7 +124,7 @@ function newTask(building='command',preferredScope='global'){
   <label class="field">Ce trebuie să livreze agentul?<textarea id="taskDescription" required maxlength="4000" placeholder="Ex: Analizează oportunitățile Hunter salvate și propune criterii pentru cele mai profitabile proiecte"></textarea></label>
   <label class="field">Agent responsabil<select id="taskRole">${Object.entries(AGENT_ROLES).map(([k,v])=>`<option value="${k}" ${k===defaultRole?'selected':''}>${v}</option>`).join('')}</select></label>
   <label class="field"><input id="taskHunterConsent" type="checkbox" style="width:auto;vertical-align:middle;margin-right:7px"> Include oportunitățile Hunter salvate în analiza AI</label>
-  <p class="hint" id="hunterConsentHint">Opțional. Trimite către furnizorul AI maximum 12 anunțuri salvate (titlu, descriere scurtă, scor), fără notițele private sau tokenuri. Nu se preiau automat în lipsa acordului.</p>
+  <p class="hint" id="hunterConsentHint">Opțional. Trimite către furnizorul AI maximum 10 anunțuri salvate (titlu, descriere scurtă, scor), fără notițele private sau tokenuri. Nu se preiau automat în lipsa acordului.</p>
   <button class="action" type="submit">📋 Creează misiunea</button></form>
   <p class="note">Nicio ofertă, publicare, tranzacție sau modificare GitHub fără un flux separat de aprobare. Serverul generează doar text.</p>`);
  const updateHint=()=>{
@@ -147,11 +147,11 @@ function newTask(building='command',preferredScope='global'){
 function hunterMissionSnapshot(){
  // Client-side Hunter data is local to this browser and MUST be explicitly opted in.
  if(typeof hunterSaved==='undefined'||!Array.isArray(hunterSaved))return [];
- return hunterSaved.slice(0,12).map(o=>({
-  title:String(o.title||'').slice(0,180),
-  description:String(o.description||'').slice(0,240),
-  source:String(o.source||'').slice(0,70),
-  stage:String(o.state||'saved').slice(0,30),
+ return hunterSaved.slice(0,10).map(o=>({
+  title:String(o.title||'').slice(0,120),
+  description:String(o.description||'').slice(0,160),
+  source:String(o.source||'').slice(0,60),
+  stage:String(o.state||'saved').slice(0,24),
   score:Number.isFinite(Number(o.score))?Math.max(0,Math.min(100,Number(o.score))):0
  })).filter(o=>o.title);
 }
@@ -184,7 +184,7 @@ function missionDetail(id){
  };
  if($('#toggleMissionHunter'))$('#toggleMissionHunter').onclick=()=>{
   const next=!t.includeHunter;
-  if(next&&!confirm('Atașăm la următoarea execuție AI maximum 12 oportunități Hunter salvate în acest browser, fără notițe private sau tokenuri. Ești de acord?'))return;
+  if(next&&!confirm('Atașăm la următoarea execuție AI maximum 10 oportunități Hunter salvate în acest browser, fără notițe private sau tokenuri. Ești de acord?'))return;
   t.includeHunter=next;refresh();missionDetail(t.id);
  };
  if($('#prepareGitHub'))$('#prepareGitHub').onclick=()=>githubPrepareForm(t.id);
