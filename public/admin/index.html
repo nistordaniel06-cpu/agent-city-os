@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0c1323">
+<meta name="robots" content="noindex,nofollow">
+<title>Agent City OS · Admin</title>
+<style>
+:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#e8eefb;background:#0b1120;font-size:14px}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at 10% 0%,#182744 0%,#0b1120 55%);min-height:100dvh}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+a{color:#87bcff}
+.hidden{display:none!important}
+.wrap{max-width:1440px;margin:auto;padding:24px}
+.top{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap}
+.mark{width:41px;height:41px;border-radius:12px;background:linear-gradient(145deg,#b8a6ff,#6289ea);display:grid;place-items:center;color:#10152b;font-size:22px}
+.brand{display:flex;gap:12px;align-items:center}.brand b{font-size:17px;letter-spacing:.25px}.brand small{display:block;color:#91a2c5;margin-top:3px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid #394966;border-radius:10px;background:#1d2c47;color:#e8eefb;padding:10px 13px;font-weight:700;text-decoration:none;min-height:40px}
+.btn.primary{background:#c6b6ff;border-color:#c6b6ff;color:#1d1c3d}.btn:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #c6b6ff;outline-offset:2px}
+.btn:hover{filter:brightness(1.13)}.btn:disabled{opacity:.5;cursor:not-allowed}
+.gate{max-width:500px;margin:8vh auto 0;padding:26px;border-radius:19px;background:#141e32;border:1px solid #35435f;box-shadow:0 15px 55px #02061770}
+.gate h1{margin:0 0 8px;font-size:26px}.gate p{color:#aebcda;line-height:1.6}
+.field{display:grid;gap:8px;margin:13px 0 17px;font-weight:680}
+.field input,.field textarea,.field select{width:100%;background:#0c1527;color:#edf3ff;border:1px solid #405071;border-radius:9px;padding:12px;outline:0}
+.field textarea{min-height:155px;resize:vertical}
+.error{color:#ffabb4;font-weight:650;min-height:22px}
+.layout{display:grid;grid-template-columns:230px minmax(0,1fr);gap:20px}
+.sidebar,.panel{border:1px solid #34425c;border-radius:15px;background:#131e31}
+.sidebar{padding:11px;align-self:start}
+.nav{display:block;width:100%;text-align:left;padding:13px 15px;margin:4px 0;border:0;border-radius:9px;color:#a9bade;background:transparent;font-weight:690}
+.nav.active{color:#f5edff;background:#283759}.nav:hover{background:#1f304d;color:#fff}
+.main{min-width:0}
+.panel{padding:20px;margin-bottom:16px}
+h1,h2,h3{letter-spacing:-.02em}
+h1{margin:0 0 6px;font-size:25px}
+h2{margin:0 0 13px;font-size:19px}
+h3{font-size:15px}
+.sub{color:#9eafcc;font-size:13px;line-height:1.6;margin:0 0 17px}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.metric{background:#151f35;border:1px solid #34425d;padding:18px;border-radius:13px}
+.metric strong{font-size:26px;display:block;margin:8px 0 0}.metric small{color:#a5b4d3}
+.pill{display:inline-block;padding:4px 9px;border:1px solid #425477;border-radius:999px;color:#b4c6e6;font-size:11px;font-weight:800}
+.pill.ok{border-color:#326b62;color:#91ecd0;background:#163c39}.pill.warn{border-color:#86613e;color:#ffcc8e;background:#3a2b21}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:13px 0;border-bottom:1px solid #30405c}
+.row:last-child{border:0}.row b{display:block;overflow-wrap:anywhere}.row small{display:block;color:#a0b0d0;margin-top:5px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.hint{background:#222c43;border:1px solid #444c68;border-radius:10px;padding:12px 15px;color:#c2c9df;line-height:1.5;margin:12px 0}
+.warn{background:#30251e;border-color:#695037;color:#ffd5a1}
+.section{display:none}.section.active{display:block}
+.tools{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px}
+.tools select{background:#162641;color:#ecf0fa;border:1px solid #3a5071;padding:10px;border-radius:8px}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#0b1528;border-radius:10px;padding:14px;border:1px solid #364463}
+.status{min-height:24px;color:#b8d4ff;margin:10px 0}
+.footer{color:#7b8cad;font-size:12px;line-height:1.6;margin:18px 0 10px}
+@media(max-width:950px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.layout{grid-template-columns:1fr}.sidebar{display:flex;flex-wrap:wrap}.nav{width:auto;flex:1 0 auto;font-size:12px;padding:11px}}
+@media(max-width:540px){.wrap{padding:12px}.grid{gap:8px}.metric{padding:12px}.metric strong{font-size:23px}.panel{padding:14px}.gate{padding:19px}.brand b{font-size:14px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+ <div class="brand"><span class="mark" aria-hidden="true">⌘</span><div><b>AGENT CITY <span style="color:#c6b6ff">ADMIN</span></b><small>Agency Control Center · Owner only</small></div></div>
+ <div class="actions"><a class="btn" href="/">↗ Înapoi în oraș</a><button id="logout" class="btn hidden" type="button">Deconectare</button></div>
+</header>
+<section id="login" class="gate">
+ <h1>Controlul agenției</h1>
+ <p>Introdu tokenul privat <code>AGENT_CITY_ACCESS_TOKEN</code>. Autentificarea este verificată de server; tokenul rămâne doar în memoria acestei pagini, nu în stocarea browserului.</p>
+ <form id="loginForm">
+  <label class="field">Token de acces <input id="ownerToken" type="password" required autocomplete="off" placeholder="Valoarea tokenului din Vercel"></label>
+  <button type="submit" class="btn primary">Deblochează administrarea</button>
+ </form>
+ <p id="loginError" class="error" role="alert"></p>
+ <p class="sub">Nu trimite tokenul prin chat. Linkul paginii poate fi accesat public, însă datele de server sunt protejate prin autentificare.</p>
+</section>
+<div id="dashboard" class="layout hidden">
+ <nav class="sidebar" aria-label="Administrare">
+  <button type="button" class="nav active" data-section="overview">▦ Prezentare generală</button>
+  <button type="button" class="nav" data-section="projects">▤ Proiecte</button>
+  <button type="button" class="nav" data-section="missions">☑ Misiuni & aprobări</button>
+  <button type="button" class="nav" data-section="agents">♟ Agenți AI</button>
+  <button type="button" class="nav" data-section="hyagent">🌍 HyAgent · traducere</button>
+  <button type="button" class="nav" data-section="integrations">⛓ Integrări & GitHub</button>
+  <button type="button" class="nav" data-section="settings">⚙ Siguranță & backup</button>
+ </nav>
+ <main class="main">
+  <div class="section active" id="overview">
+   <h1>Agency overview</h1><p class="sub">Operațiuni, proiecte și starea serviciilor conectate. Valori locale și informații de server sunt separate.</p>
+   <div class="grid">
+    <div class="metric"><small>Proiecte pe acest dispozitiv</small><strong id="countProjects">—</strong></div>
+    <div class="metric"><small>Misiuni pe acest dispozitiv</small><strong id="countMissions">—</strong></div>
+    <div class="metric"><small>De aprobat</small><strong id="countReview">—</strong></div>
+    <div class="metric"><small>Furnizor AI</small><strong id="metricProvider">—</strong></div>
+   </div>
+   <div class="panel"><h2>Servicii conectate</h2><div id="statusRows"></div><div class="actions"><button id="refreshStatus" class="btn">↻ Reîncarcă starea</button></div></div>
+   <div class="panel"><h2>Limite de utilizare</h2><div id="limitsRows"></div><p class="hint">Vercel serverless nu garantează contoare comune între instanțe. Aceste valori sunt informative, nu o măsurare de billing.</p></div>
+   <p class="hint warn">Proiectele și misiunile existente sunt păstrate în localStorage din acest browser. Panoul nu poate vedea automat datele de pe alt telefon sau calculator. Pentru sincronizare reală este necesară o bază de date și autentificare multi-utilizator.</p>
+  </div>
+  <div class="section" id="projects">
+   <h1>Proiecte</h1><p class="sub">Vizualizare și actualizare manuală a stării proiectelor salvate în browserul acesta.</p>
+   <div class="panel"><div class="tools"><h2>Proiecte locale</h2><button class="btn" id="reloadProjects">↻ Actualizează</button></div><div id="projectRows"></div></div>
+  </div>
+  <div class="section" id="missions">
+   <h1>Misiuni & aprobări</h1><p class="sub">Poți aproba un livrabil text doar după ce îl citești. Această aprobare nu face merge în GitHub.</p>
+   <div class="panel"><div class="tools"><h2>Mission board</h2><select id="missionFilter" aria-label="Filtrează misiunile"><option value="all">Toate</option><option value="review">De aprobat</option><option value="queued">În așteptare</option><option value="failed">Erori</option><option value="done">Aprobate</option></select></div><div id="missionRows"></div></div>
+  </div>
+  <div class="section" id="agents">
+   <h1>Agenți AI</h1><p class="sub">Diferențiem clar rolurile demo, motorul AI real și integrările externe.</p>
+   <div class="panel"><h2>Roluri și furnizori</h2><div id="agentRows"></div></div>
+  </div>
+  <div class="section" id="hyagent">
+   <h1>HyAgent · Translation Studio</h1>
+   <p class="sub">Modelul Hy-MT2 din repository-ul tău este dedicat traducerilor. Pentru inferență reală are nevoie de un endpoint extern compatibil cu OpenAI Chat Completions. Nu rulează local în Vercel.</p>
+   <div class="panel">
+    <div class="row"><div><b>Hy-MT2 remote inference</b><small id="hyModel">Model indisponibil</small></div><span class="pill" id="hyStatus">Verificare</span></div>
+    <p class="hint" id="hyHint">Verifică starea serviciului înainte să trimiți text.</p>
+    <form id="translateForm">
+     <div class="tools"><label class="field" style="flex:1">Din limba <select id="sourceLanguage"><option>Romanian</option><option>English</option><option>French</option><option>German</option><option>Italian</option><option>Spanish</option></select></label>
+     <label class="field" style="flex:1">În limba <select id="targetLanguage"><option>English</option><option>Romanian</option><option>French</option><option>German</option><option>Italian</option><option>Spanish</option></select></label></div>
+     <label class="field">Stil <select id="translationStyle"><option value="fidel">Fidel</option><option value="business">Business</option><option value="natural">Natural</option></select></label>
+     <label class="field">Text de tradus (maximum 5000 caractere)<textarea id="translationText" maxlength="5000" required placeholder="Scrie un mesaj pentru clienți sau o descriere de serviciu..."></textarea></label>
+     <button class="btn primary" id="translateBtn" type="submit">🌍 Traduce cu HyAgent</button>
+    </form>
+    <p id="translateMessage" class="status" role="status"></p>
+    <div id="translationResult" class="hidden"><h3>Rezultatul traducerii</h3><pre id="translatedText"></pre><button class="btn" id="copyTranslation" type="button">Copiază traducerea</button></div>
+   </div>
+  </div>
+  <div class="section" id="integrations">
+   <h1>Integrări</h1><p class="sub">Platformele folosite de agenție și locurile în care verifici execuțiile.</p>
+   <div class="panel" id="integrationRows"></div>
+  </div>
+  <div class="section" id="settings">
+   <h1>Siguranță & backup</h1>
+   <div class="panel"><h2>Politici owner</h2><p class="hint">Tokenul este păstrat doar în RAM-ul paginii și este verificat pe server la fiecare acces admin. Deconectarea îl elimină. Folosește HTTPS și nu partaja tokenul.</p><p class="hint warn">Momentan același token protejează funcțiile AI și administrația. Nu este încă un sistem de roluri sau autentificare individuală; pentru echipă trebuie adăugat login separat și o bază de date.</p></div>
+   <div class="panel"><h2>Export local</h2><p class="sub">Descarcă datele de proiecte și misiuni din acest browser. Nu include chei, credentiale sau notițele Hunter.</p><button type="button" class="btn" id="exportBackup">↓ Export proiecte & misiuni JSON</button></div>
+   <div class="panel"><h2>Gestionare conexiuni</h2><a class="btn" href="https://vercel.com/4-men/agent-city-os/settings/environment-variables" target="_blank" rel="noopener noreferrer">Vercel — Environment Variables ↗</a> <a class="btn" href="https://github.com/nistordaniel06-cpu/agent-city-os/settings/secrets/actions" target="_blank" rel="noopener noreferrer">GitHub — Actions Secrets ↗</a></div>
+  </div>
+  <footer class="footer">AGENT CITY OS · ADMIN MVP · browser-localStorage + API securizat · fără merge automat, plăți sau mesaje trimise</footer>
+ </main>
+</div>
+</div>
+<script src="/admin/admin.js" defer></script>
+</body>
+</html>
