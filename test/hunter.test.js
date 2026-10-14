@@ -30,7 +30,7 @@ test('AI proposal is a text draft and never a posted application',async()=>{
  const r=await h.draft(body);assert.equal(r.sent,false);assert.equal(r.delivery,'manual_only');assert.match(r.output,/Draft proposal/);assert.equal(sent.store,false);assert.match(sent.instructions,/Nu inventa/);
 });
 test('draft is disabled without key, manual public HTTPS input is permitted as text',async()=>{
- const h=createHunter();await assert.rejects(h.draft({}),/OPENAI_API_KEY/);
+ const h=createHunter();await assert.rejects(h.draft({}),/cheia pentru furnizorul AI selectat/);
  const p={opportunity:{title:'Design site',description:'Make website',url:'https://example.org/requests/12',source:'Adăugat manual'},profile:{name:'Web studio',description:'UX design and sites'}};
  assert.equal(validateProfile(p).opportunity.source,'Adăugat manual');
  assert.throws(()=>validateProfile({...p,opportunity:{...p.opportunity,url:'http://127.0.0.1:3000/'}}),/HTTPS/);

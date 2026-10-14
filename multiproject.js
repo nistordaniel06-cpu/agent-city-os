@@ -18,7 +18,7 @@ const AGENT_ROLES = {
 };
 let workspaces=loadWorkspaces();
 let currentProjectId=getLocal(ACTIVE_KEY)||workspaces[0]?.id||'';
-let connectedBackend=false,configuredBackend=false,configuredGithub=false;
+let connectedBackend=false,configuredBackend=false,configuredGithub=false,activeAIProvider='';
 let authToken='';
 let lockRun=false;
 function uid(){return (globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`)}
@@ -119,7 +119,7 @@ function newTask(building='command'){
 function missionDetail(id){
  let t=tasks.find(x=>String(x.id)===String(id));if(!t)return allTaskModal();
  let p=workspaces.find(x=>x.id===t.projectId);if(!p)return allTaskModal();
- const mode=connectedBackend&&configuredBackend?'Server AI conectat':'Fără AI conectat (mod local)';
+ const mode=connectedBackend&&configuredBackend?'Server AI '+(activeAIProvider||'')+' conectat':'Fără AI conectat (mod local)';
  modal('Misiune · '+(p.name),'AGENT WORK ORDER',
    `<div class="projectMeta"><span>${esc(AGENT_ROLES[t.role]||t.role||'Agent')}</span><span>${missionStatus(t.status)}</span></div>
     <div class="resultText">${esc(t.name)}</div>
@@ -145,10 +145,10 @@ function missionDetail(id){
 async function probeBackend(){
  try{let ctrl=new AbortController();let timeout=setTimeout(()=>ctrl.abort(),1700);
    let r=await fetch('/api/health',{signal:ctrl.signal});clearTimeout(timeout);
-   let j=await r.json();connectedBackend=r.ok&&j.product==='agent-city-os';configuredBackend=!!j.aiConfigured;configuredGithub=!!j.githubConfigured;
- }catch{connectedBackend=false;configuredBackend=false;configuredGithub=false}
- $('#connectionLabel').textContent=connectedBackend?(configuredBackend?'AI DISPONIBIL':'SERVER · LIPSEȘTE CHEIA'):'MOD LOCAL';
- $('#executionMode').textContent=connectedBackend?(configuredBackend?'AI LA CERERE':'NECONFIGURAT'):'FĂRĂ BACKEND';
+   let j=await r.json();connectedBackend=r.ok&&j.product==='agent-city-os';configuredBackend=!!j.aiConfigured;configuredGithub=!!j.githubConfigured;activeAIProvider=j.aiProvider==='groq'?'GROQ':j.aiProvider==='openai'?'OPENAI':'';
+ }catch{connectedBackend=false;configuredBackend=false;configuredGithub=false;activeAIProvider=''}
+ $('#connectionLabel').textContent=connectedBackend?(configuredBackend?'AI '+(activeAIProvider||'DISPONIBIL'):'SERVER · LIPSEȘTE CHEIA'):'MOD LOCAL';
+ $('#executionMode').textContent=connectedBackend?(configuredBackend?'AI '+(activeAIProvider||'')+' LA CERERE':'NECONFIGURAT'):'FĂRĂ BACKEND';
 }
 
 async function requireAccessToken(){
@@ -173,7 +173,7 @@ src/app.js"></textarea></label>
 async function prepareGithubTask(id,files){
  if(lockRun)return;const t=tasks.find(x=>x.id===id),p=workspaces.find(x=>x.id===t?.projectId);
  if(!t||!p)return;
- if(!configuredGithub){alert('Integrarea GitHub nu este configurată pe server. Sunt necesare GITHUB_OWNER, GITHUB_TOKEN și OPENAI_API_KEY.');return}
+ if(!configuredGithub){alert('Integrarea GitHub nu este configurată pe server. Sunt necesare GITHUB_OWNER, GITHUB_TOKEN și cheia furnizorului AI ales.');return}
  if(!await requireAccessToken())return;
  lockRun=true;
  modal('Developer AI · GitHub','SE PREGĂTEȘTE PROPUNEREA',`<p class="subtitle">Se citesc fișierele selectate, apoi AI pregătește o versiune nouă. Nu se modifică repository-ul.</p><p class="hint">Fișiere: ${esc(files.join(', '))}</p>`);
@@ -214,7 +214,7 @@ async function publishGithub(id){
 async function startTask(id){
  if(lockRun)return;let t=tasks.find(x=>x.id===id),p=workspaces.find(x=>x.id===t?.projectId);
  if(!t||!p)return;if(!connectedBackend){alert('Acum funcționează doar dashboard-ul local. Pentru AI real pornește serverul Node.js din arhivă. Vezi README.');return}
- if(!configuredBackend){alert('Serverul există, dar OPENAI_API_KEY nu este configurată. Vezi README.');return}
+ if(!configuredBackend){alert('Serverul există, dar cheia furnizorului AI selectat nu este configurată. Pentru Groq adaugă GROQ_API_KEY și AI_PROVIDER=groq în Vercel.');return}
  if(!authToken){authToken=prompt('Tokenul tău de acces (AGENT_CITY_ACCESS_TOKEN), păstrat doar în memoria paginii:')||'';if(!authToken)return}
  lockRun=true;t.status='running';refresh();missionDetail(t.id);
  try{
