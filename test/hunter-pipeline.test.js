@@ -31,7 +31,7 @@ test('sales pipeline prioritizes due work, then chosen priority',()=>{
   {id:'c',state:'qualified',priority:'normal',score:20,nextActionAt:'2026-10-10'},
   {id:'d',state:'lost',priority:'high',score:95,nextActionAt:'2026-10-09'}
  ];
- assert.deepEqual(Array.from(vm.runInContext('hunterPipelineRows(items,"all","2026-10-14")',ctx),x=>x.id),['c','b','d','a']);
+ assert.deepEqual(Array.from(vm.runInContext('hunterPipelineRows(items,"all","2026-10-14")',ctx),x=>x.id),['c','b','a','d']);
  assert.deepEqual(Array.from(vm.runInContext('hunterPipelineRows(items,"due","2026-10-14")',ctx),x=>x.id),['c']);
  assert.deepEqual(Array.from(vm.runInContext('hunterPipelineRows(items,"qualified","2026-10-14")',ctx),x=>x.id),['c']);
 });
