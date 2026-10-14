@@ -53,7 +53,7 @@ function showCodeReviewer(){
   '<a href="'+CODE_REVIEW_BASE+'/pulls" target="_blank" rel="noopener noreferrer" class="smallBtn">🔎 Toate PR-urile ↗</a>'+
   '<button class="smallBtn" id="codeReviewReload">↻ Actualizează</button></div>'+
   '<h3 class="sectionTitle">PR-URI DESCHISE</h3><div id="codeReviewPulls"><p class="hint">Se încarcă informațiile publice GitHub…</p></div>'+
-  '<h3 class="sectionTitle">ULTIMELE RULĂRI OPENCodeReview</h3><div id="codeReviewRuns"><p class="hint">Se încarcă starea verificărilor…</p></div>'+
+  '<h3 class="sectionTitle">ULTIMELE RULĂRI OpenCodeReview</h3><div id="codeReviewRuns"><p class="hint">Se încarcă starea verificărilor…</p></div>'+
   '<p class="note">Pentru rularea automată trebuie să adaugi <b>OCR_GROQ_API_KEY</b> ca secret în <b>GitHub → agent-city-os → Settings → Secrets and variables → Actions</b>. Cheia din Vercel nu este transmisă automat. Workflow-ul nu face merge, nu execută codul PR-ului și nu trimite modificări. Pentru protecție obligatorie la merge setează un Ruleset pe main cu verificări și aprobare umană. Integrarea se aplică momentan doar acestui repository.</p>');
  $('#codeReviewReload').onclick=loadCodeReviewStatus;
  loadCodeReviewStatus();
