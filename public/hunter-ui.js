@@ -26,6 +26,9 @@ function hunterPipelineRows(rows,stage='all',today=hunterToday()){
   .slice().sort((a,b)=>{
    const due=Number(hunterDue(b,today))-Number(hunterDue(a,today));
    if(due)return due;
+   // Closed leads never outrank active opportunities just because they were high priority.
+   const closed=Number(['won','lost','rejected'].includes(a.state))-Number(['won','lost','rejected'].includes(b.state));
+   if(closed)return closed;
    const priority=(rank[a.priority]??1)-(rank[b.priority]??1);
    if(priority)return priority;
    return Number(b.score||0)-Number(a.score||0)||String(b.savedAt||'').localeCompare(String(a.savedAt||''));
