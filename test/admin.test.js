@@ -31,6 +31,8 @@ test('production maps admin HTML and JS while all privileged data stays behind b
  assert.match(ui,/ownerToken='';state=null;/);
  assert.match(ui,/Code Reviewer/);
  assert.match(ui,/hyagent/);
+ assert.doesNotThrow(()=>new Function(ui),'Admin JavaScript trebuie să fie valid și parsabil pe browser');
+ assert.match(page,/id="approveMission"/);
 });
 test('owner-only status never includes credentials, and local admin serves shell',async()=>{
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
