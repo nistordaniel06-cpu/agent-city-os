@@ -130,6 +130,8 @@ function newTask(building='command',preferredScope='global'){
  const updateHint=()=>{
   const scope=$('#taskScope').value;
   $('#scopeHint').textContent=scope==='global'?'🌐 Context global al agenției, fără asociere cu proiectul selectat.':'📁 Context exclusiv: '+(p?.name||'Proiect neselectat');
+  $('#taskHunterConsent').disabled=scope!=='global';
+  if(scope!=='global')$('#taskHunterConsent').checked=false;
  };
  $('#taskScope').onchange=updateHint;updateHint();
  $('#taskForm').onsubmit=e=>{
@@ -138,7 +140,7 @@ function newTask(building='command',preferredScope='global'){
   if(!name)return;
   if(scope!=='global'&&scope!=='project')return alert('Alege domeniul misiunii.');
   if(scope==='project'&&!p)return alert('Creează întâi un proiect.');
-  const t={id:uid(),name,scope,projectId:scope==='project'?p.id:'',role,status:'queued',created:new Date().toISOString(),output:'',usage:null,includeHunter:$('#taskHunterConsent').checked};
+  const t={id:uid(),name,scope,projectId:scope==='project'?p.id:'',role,status:'queued',created:new Date().toISOString(),output:'',usage:null,includeHunter:scope==='global'&&$('#taskHunterConsent').checked};
   tasks.push(t);refresh();close();log('Misiune '+(scope==='global'?'globală':'de proiect')+' pregătită: '+name.slice(0,60));missionDetail(t.id);
  };
 }
@@ -164,6 +166,8 @@ function missionDetail(id){
     ${t.output?`<h3 class="sectionTitle">LIVRABIL AI · NECESITĂ VERIFICARE UMANĂ</h3><div class="resultText">${esc(t.output)}</div>`:''}
     <div class="projectToolbar">
       ${['queued','failed'].includes(t.status)?`<button class="smallBtn approve" id="runMission">▶ Execută cu AI</button>`:''}
+      ${!global&&['queued','failed'].includes(t.status)?`<button class="smallBtn" id="moveMissionGlobal">🌐 Mută la agenție</button>`:''}
+      ${global?`<button class="smallBtn" id="toggleMissionHunter">${t.includeHunter?'📌 Hunter: inclus':'📌 Hunter: atașează'}</button>`:''}
       ${!global&&t.role==='developer'&&p.repo?`<button class="smallBtn approve" id="prepareGitHub">🔧 Pregătește patch GitHub</button>`:''}
       ${t.githubPreview?`<button class="smallBtn" id="showGitHubPreview">👁️ Vezi propunerea GitHub</button>`:''}
       ${t.status==='review'?`<button class="smallBtn approve" id="approveMission">✓ Aprob livrabilul</button>`:''}
@@ -173,6 +177,16 @@ function missionDetail(id){
     </div>
     <p class="hint">${esc(mode)} · „Execută cu AI” generează text. „Pregătește patch GitHub” citește doar fișierele indicate și propune modificări; deschiderea unui draft PR cere o aprobare separată. Nu rulează cod, nu face merge.</p>`);
  if($('#runMission'))$('#runMission').onclick=()=>startTask(t.id);
+ if($('#moveMissionGlobal'))$('#moveMissionGlobal').onclick=()=>{
+  if(!confirm('Muți această misiune în Agenție · Global? Nu va mai folosi contextul proiectului '+p.name+'.'))return;
+  t.scope='global';t.projectId='';t.includeHunter=false;t.output='';t.usage=null;t.githubPreview=null;
+  refresh();missionDetail(t.id);
+ };
+ if($('#toggleMissionHunter'))$('#toggleMissionHunter').onclick=()=>{
+  const next=!t.includeHunter;
+  if(next&&!confirm('Atașăm la următoarea execuție AI maximum 12 oportunități Hunter salvate în acest browser, fără notițe private sau tokenuri. Ești de acord?'))return;
+  t.includeHunter=next;refresh();missionDetail(t.id);
+ };
  if($('#prepareGitHub'))$('#prepareGitHub').onclick=()=>githubPrepareForm(t.id);
  if($('#showGitHubPreview'))$('#showGitHubPreview').onclick=()=>githubPreview(t.id);
  if($('#approveMission'))$('#approveMission').onclick=()=>{t.status='done';refresh();log('Livrabil aprobat: '+t.name.slice(0,48));missionDetail(t.id)};
