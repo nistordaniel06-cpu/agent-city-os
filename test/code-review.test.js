@@ -16,12 +16,14 @@ test('GitHub Action uses pinned OpenCodeReview and Groq with safe permissions, n
  assert.match(workflow,/pull-requests: write/);
  assert.match(workflow,/OCR_GROQ_API_KEY/);
  assert.match(workflow,/if \[ -z "\$GROQ_OCR_API_KEY" \]/);
+ assert.match(workflow,/echo "configured=false" >> "\$GITHUB_OUTPUT"/);
+ assert.match(workflow,/if: steps\.configuration\.outputs\.configured == 'true'/);
  assert.match(workflow,/uses: nistordaniel06-cpu\/open-code-review@[a-f0-9]{40}/);
  assert.match(workflow,/ocr_version: '1\.13\.0'/);
  assert.match(workflow,/llm_url: 'https:\/\/api\.groq\.com\/openai\/v1\/chat\/completions'/);
  assert.match(workflow,/llm_model: 'openai\/gpt-oss-20b'/);
  assert.match(workflow,/review_concurrency: '1'/);
- assert.match(workflow,/max_tokens_budget: '8000'/);
+ assert.match(workflow,/max_tokens_budget: '32000'/);
  assert.doesNotMatch(workflow,/(\n|\s)(?:gh pr merge|merge_pull_request|git push|pull-requests: write.*contents: write)/);
  assert.doesNotMatch(workflow,/uses: nistordaniel06-cpu\/open-code-review@(?:main|master|v\d)/);
 });

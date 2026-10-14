@@ -27,17 +27,18 @@ function loginView(open){
  $('dashboard').classList.toggle('hidden',open);
  $('logout').classList.toggle('hidden',open);
 }
-function logout(){ownerToken='';state=null;$('ownerToken').value='';loginView(true);message('loginError','')}
+function logout(){window.AgentCitySales?.lock();ownerToken='';state=null;$('ownerToken').value='';loginView(true);message('loginError','')}
 async function login(e){
  e.preventDefault();
  const value=$('ownerToken').value.trim();if(!value)return;
  ownerToken=value;message('loginError','Verific tokenul pe server…');
- try{state=await protect('/api/admin/status');$('ownerToken').value='';loginView(false);message('loginError','');refreshAll()}
- catch(e){ownerToken='';message('loginError',e.message)}
+ try{state=await protect('/api/admin/status');await window.AgentCitySales.unlock(value,protect);$('ownerToken').value='';loginView(false);message('loginError','');refreshAll()}
+ catch(e){ownerToken='';state=null;window.AgentCitySales?.lock();message('loginError',e.message)}
 }
 function showSection(section){
  document.querySelectorAll('.section').forEach(el=>el.classList.toggle('active',el.id===section));
  document.querySelectorAll('.nav').forEach(el=>el.classList.toggle('active',el.dataset.section===section));
+ if(section==='sales')window.AgentCitySales?.render();
  if(section==='projects')renderProjects();
  if(section==='missions')renderMissions();
  if(section==='agents')renderAgents();
@@ -146,7 +147,7 @@ async function reloadStatus(){
 }
 function refreshAll(){
  if(!state)return;
- updateStats();renderStatus();renderProjects();renderMissions();renderAgents();renderIntegrations();
+ updateStats();renderStatus();renderProjects();renderMissions();renderAgents();renderIntegrations();window.AgentCitySales?.render();
 }
 async function translate(e){
  e.preventDefault();if(!state?.hyagent?.configured)return;

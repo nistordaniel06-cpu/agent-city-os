@@ -29,6 +29,10 @@
       "dest": "/public/admin/admin.js"
     },
     {
+      "src": "^/admin/sales\\.js$",
+      "dest": "/public/admin/sales.js"
+    },
+    {
       "src": "^/$",
       "dest": "/public/index.html"
     },

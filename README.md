@@ -18,7 +18,7 @@ Cheia Groq din **Vercel** este disponibilă aplicației web, dar **nu și GitHub
 1. Deschide [GitHub → agent-city-os → Actions Secrets](https://github.com/nistordaniel06-cpu/agent-city-os/settings/secrets/actions).
 2. Apasă **New repository secret** și creează `OCR_GROQ_API_KEY` cu cheia Groq din contul tău. Folosește o cheie separată dacă dorești să poți revoca accesul doar acestui reviewer.
 3. La următorul PR eligibil, workflow-ul rulează OpenCodeReview și lasă observații pe PR. Fără secret, workflow-ul **eșuează explicit**, fără a expune sau încerca automat cheia OpenAI.
-4. Modelul și bugetul sunt configurate în workflow: un singur review la un moment dat per PR, `max_tokens_budget: 8000`, fără retry automat către un furnizor cu plată. Cotele și disponibilitatea Groq pot limita sau opri temporar analiza.
+4. Modelul și bugetul sunt configurate în workflow: un singur review la un moment dat per PR, buget maxim `max_tokens_budget: 32000` pentru a permite review-ul PR-urilor cu mai multe fișiere, fără retry automat către un furnizor cu plată. Cotele și disponibilitatea Groq pot limita sau opri temporar analiza.
 
 ### Aprobarea înainte de merge
 
@@ -236,3 +236,23 @@ Salvează și fă Redeploy, apoi intră în `/admin`, autentifică-te cu tokenul
 ### Code Reviewer este separat
 
 OpenCodeReview + Groq este în [PR #9](https://github.com/nistordaniel06-cpu/agent-city-os/pull/9), care **nu este integrat automat** prin această modificare. Nu există auto-merge; aprobarea unui livrabil în admin nu aprobă un GitHub PR. Workflow-urile de GitHub Actions și Ruleset-urile de protecție necesită configurări specifice.
+
+## 💼 Agency Sales Mode — CRM owner, oferte și avansuri
+
+**Admin → Agency Sales Mode** adaugă un CRM pentru primii clienți ai agenției, fără abonamente la servicii externe. Este un MVP **owner-only, browser-local**. Nu este un CRM multiutilizator, nu trimite mesaje, nu emite facturi și nu confirmă plăți.
+
+- **Pachete orientative:** START = **1.490 lei** implementare + **149 lei/lună**; GROW = **2.990 lei** + **299 lei/lună**. Opțiuni: copywriting (+300), SEO local (+350), automatizare simplă (+800), lucrări suplimentare și reduceri explicite. Nu sunt incluse calcule TVA; validează contractul și fiscalitatea înainte de facturare.
+- **CRM:** firmă, persoană, canal de contact, sursă, brief, etapă, termen, următoarea acțiune și notițe interne. Flux: lead → calificat → draft → aprobat → trimis manual → negociere → acceptat → executat → livrat / pierdut.
+- **Estimare deterministă:** setup, abonament lunar, avans cerut (implicit 50%), rest după avans și marjă brută estimată înainte de taxe. Inputurile numerice sunt validate de server pentru ofertele AI.
+- **Oferte AI (Groq/OpenAI conform `AI_PROVIDER`):** endpointul `POST /api/admin/sales/draft` necesită `AGENT_CITY_ACCESS_TOKEN`, consimțământ explicit și limitează redactările la 3/oră per instanță. AI primește numai numele companiei, persoana de contact, cerințele și prețul estimat, **nu** canalul privat, notițele sau istoricul încasărilor. Returnează doar un text **NEAPROBAT / NETRIMIS**. Tu îl verifici, salvezi eventualele modificări, apeși „Aprob” și poți copia textul. Aplicația **nu** face outreach, nu trimite email sau WhatsApp și nu acceptă contracte.
+- **Avansuri/încasări:** se trec manual după verificarea reală în bancă / casierie. Nu sunt sincronizate cu plățile, nu constituie dovadă de plată și nu emit documente fiscale.
+- **Confidențialitate:** CRM-ul este criptat **înainte** să fie salvat în `localStorage` cu AES-256-GCM, cheie derivată PBKDF2 din `AGENT_CITY_ACCESS_TOKEN` și salt aleator. Tokenul este doar în memoria paginii cât timp ești autentificat; nu se salvează în repo, HTML, backup sau storage. Folosește HTTPS, dispozitive de încredere și verifică cine are acces la token. Criptarea nu protejează de extensii malițioase, XSS sau dispozitive compromise.
+- **Backup:** poți exporta/importa backupul CRM **criptat**. Pierderea sau schimbarea tokenului poate face datele imposibil de recuperat; păstrează un backup sigur și o metodă proprie de recuperare a tokenului. CRM-ul nu se sincronizează automat între telefon și PC, iar backupurile principale ale aplicației nu includ datele Sales.
+
+### Validare locală
+
+`npm test` include calculele financiare, controalele autentificării la API, redactarea mock Groq fără contactare externă, scriptul admin și criptarea browser-side. Nu se execută cereri reale Groq în teste.
+
+### Limite și următorul upgrade
+
+CRM-ul este pentru validarea primelor vânzări, cu maximum 150 de leaduri per browser. Pentru producție cu mai mulți colaboratori, următoarea etapă este Supabase/DB gestionată, identități owner/staff, jurnal de audit și limite de consum distribuite. Până atunci, folosește exportul criptat și nu stoca numere de card, copii de documente sau date sensibile inutile.

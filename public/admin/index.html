@@ -79,6 +79,7 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#0b1528;border-radius
  <nav class="sidebar" aria-label="Administrare">
   <button type="button" class="nav active" data-section="overview">▦ Prezentare generală</button>
   <button type="button" class="nav" data-section="projects">▤ Proiecte</button>
+  <button type="button" class="nav" data-section="sales">💼 Agency Sales Mode</button>
   <button type="button" class="nav" data-section="missions">☑ Misiuni & aprobări</button>
   <button type="button" class="nav" data-section="agents">♟ Agenți AI</button>
   <button type="button" class="nav" data-section="hyagent">🌍 HyAgent · traducere</button>
@@ -101,6 +102,70 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#0b1528;border-radius
   <div class="section" id="projects">
    <h1>Proiecte</h1><p class="sub">Vizualizare și actualizare manuală a stării proiectelor salvate în browserul acesta.</p>
    <div class="panel"><div class="tools"><h2>Proiecte locale</h2><button class="btn" id="reloadProjects">↻ Actualizează</button></div><div id="projectRows"></div></div>
+  </div>
+  <div class="section" id="sales">
+   <h1>Agency Sales Mode</h1>
+   <p class="sub">CRM privat pentru leaduri, estimări și oferte. Totul este salvat criptat pe acest dispozitiv. Nu sunt trimise mesaje, facturi sau plăți.</p>
+   <div class="grid">
+    <div class="metric"><small>Leaduri înregistrate</small><strong id="salesCountLeads">0</strong></div>
+    <div class="metric"><small>Oferte de aprobat</small><strong id="salesCountDrafts">0</strong></div>
+    <div class="metric"><small>Valoarea lucrărilor acceptate manual</small><strong id="salesCountWon">0 lei</strong></div>
+    <div class="metric"><small>Avansuri înregistrate manual</small><strong id="salesCountDeposits">0 lei</strong></div>
+   </div>
+   <div class="panel">
+    <h2>Pachetele agenției</h2>
+    <div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+     <div class="metric"><b>START — Prezență online</b><strong>1.490 lei</strong><small>+ 149 lei/lună · site, WhatsApp, SEO de bază</small></div>
+     <div class="metric"><b>GROW — Clienți & programări</b><strong>2.990 lei</strong><small>+ 299 lei/lună · START, programări și măsurare contacte</small></div>
+    </div>
+    <p class="sub">Prețuri orientative de lansare, ajustabile prin lucrări suplimentare și reduceri. Fără tratament TVA stabilit; nu generează facturi.</p>
+   </div>
+   <div class="panel">
+    <div class="tools"><h2>Clienți potențiali / CRM</h2><div class="actions"><button class="btn primary" id="salesNew" type="button">+ Lead nou</button><button class="btn" id="salesExport" type="button">↓ Backup criptat</button><button class="btn" id="salesImportButton" type="button">↑ Importă backup</button><input id="salesImportFile" type="file" accept=".json,application/json" class="hidden"></div></div>
+    <label class="field">Filtrează după etapă <select id="salesFilter"><option value="all">Toate leadurile</option><option value="lead">Lead nou</option><option value="qualified">Calificat</option><option value="draft">Ofertă în lucru</option><option value="approved">Ofertă aprobată</option><option value="sent">Trimis manual</option><option value="negotiation">Negociere</option><option value="won">Acceptat</option><option value="in_progress">În execuție</option><option value="delivered">Livrat</option><option value="lost">Pierdut</option></select></label>
+    <div id="salesLeadList"><p class="sub">Autentifică-te pentru a încărca CRM-ul.</p></div>
+   </div>
+   <div class="panel hidden" id="salesEditor">
+    <div class="tools"><h2 id="salesEditorTitle">Lead nou</h2><button type="button" class="btn" id="salesCancel">✕ Închide</button></div>
+    <form id="salesForm">
+     <div class="tools"><label class="field" style="flex:1">Numele firmei <input id="salesCompany" maxlength="120" required></label><label class="field" style="flex:1">Persoană de contact <input id="salesContact" maxlength="90"></label></div>
+     <label class="field">Canal de contact / e-mail (nu trimitem mesaje) <input id="salesChannel" maxlength="160"></label>
+     <label class="field">Sursa oportunității <input id="salesSource" maxlength="80" placeholder="Recomandare, website, apel"></label>
+     <label class="field">Cerințe / brief <textarea id="salesRequirements" maxlength="1800" required placeholder="Ce are nevoie clientul și ce trebuie clarificat?"></textarea></label>
+     <div class="tools"><label class="field" style="flex:1">Pachet <select id="salesPackage"><option value="START">START</option><option value="GROW">GROW</option></select></label><label class="field" style="flex:1">Etapa <select id="salesStage"><option value="lead">Lead nou</option><option value="qualified">Calificat</option><option value="draft">Ofertă în lucru</option><option value="approved">Ofertă aprobată</option><option value="sent">Trimis manual</option><option value="negotiation">Negociere</option><option value="won">Acceptat manual</option><option value="in_progress">În execuție</option><option value="delivered">Livrat manual</option><option value="lost">Pierdut</option></select></label></div>
+     <fieldset style="border:1px solid #34425d;border-radius:10px;padding:12px"><legend>Opțiuni suplimentare</legend><label style="display:block;padding:6px 0"><input type="checkbox" name="salesExtra" value="copy"> Copywriting +300 lei</label><label style="display:block;padding:6px 0"><input type="checkbox" name="salesExtra" value="localSeo"> SEO local extins +350 lei</label><label style="display:block;padding:6px 0"><input type="checkbox" name="salesExtra" value="automation"> Automatizare simplă +800 lei</label></fieldset>
+     <div class="tools">
+      <label class="field" style="flex:1">Lucrări suplimentare (lei) <input id="salesExtraWork" type="number" min="0" max="20000" step="1" value="0"></label>
+      <label class="field" style="flex:1">Reducere (lei) <input id="salesDiscount" type="number" min="0" max="20000" step="1" value="0"></label>
+      <label class="field" style="flex:1">Cost intern estimat (lei) <input id="salesInternalCost" type="number" min="0" max="50000" step="1" value="0"></label>
+      <label class="field" style="flex:1">Avans cerut (%) <input id="salesAdvance" type="number" min="0" max="100" step="1" value="50"></label>
+     </div>
+     <div class="hint" id="salesEstimate">Calculez estimarea…</div>
+     <div class="tools"><label class="field" style="flex:1">Următoarea acțiune <input id="salesNextAction" type="date"></label><label class="field" style="flex:1">Termen proiect (orientativ) <input id="salesDeadline" type="date"></label></div>
+     <label class="field">Notițe interne (nu sunt trimise AI) <textarea id="salesNotes" maxlength="2000" placeholder="Detalii private și întrebări de pus clientului"></textarea></label>
+     <div class="actions"><button class="btn primary" type="submit">💾 Salvează local criptat</button><button class="btn" type="button" id="salesGenerate">✨ Generează ofertă AI pentru aprobare</button></div>
+    </form>
+    <p class="status" id="salesFeedback" role="status"></p>
+    <div id="salesOfferPanel" class="hidden">
+     <h3>Ofertă — necesită aprobare explicită</h3>
+     <p class="hint">Textul se poate edita. Orice modificare după aprobare revine la statusul „neaprobat”. Nimic nu se trimite automat.</p>
+     <label class="field">Textul propunerii <textarea id="salesOfferText" maxlength="12000" style="min-height:230px"></textarea></label>
+     <p class="status" id="salesOfferStatus"></p>
+     <div class="actions"><button class="btn" id="salesSaveOffer" type="button">Salvează revizia</button><button class="btn primary" id="salesApproveOffer" type="button">✓ Aprob oferta pentru trimitere manuală</button><button class="btn" id="salesCopyOffer" type="button">Copiază oferta aprobată</button><button class="btn" id="salesMarkSent" type="button">Am trimis-o manual</button></div>
+    </div>
+    <div id="salesPaymentsPanel" class="hidden">
+     <h3>Avansuri și încasări (evidență manuală)</h3>
+     <p class="hint warn">Nu verificăm contul bancar și nu creăm facturi. Înregistrează o plată numai după confirmarea ei în contul tău.</p>
+     <div class="status" id="salesPaymentSummary"></div>
+     <div class="tools">
+      <label class="field" style="flex:1">Suma încasată (lei) <input type="number" min="1" max="500000" step="1" id="salesPaymentAmount"></label>
+      <label class="field" style="flex:2">Referință internă (fără date de card) <input id="salesPaymentReference" maxlength="90"></label>
+     </div>
+     <button class="btn" type="button" id="salesAddPayment">+ Înregistrează plata confirmată</button>
+     <div id="salesPaymentRows"></div>
+    </div>
+   </div>
+   <p class="hint warn">CRM MVP: datele sunt criptate în acest browser, nu sincronizate între dispozitive. Pierderea tokenului sau resetarea browserului poate face datele inaccesibile. Folosește exportul criptat pentru backup. Clientul este contactat numai de tine.</p>
   </div>
   <div class="section" id="missions">
    <h1>Misiuni & aprobări</h1><p class="sub">Poți aproba un livrabil text doar după ce îl citești. Această aprobare nu face merge în GitHub.</p>
@@ -147,5 +212,6 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#0b1528;border-radius
  <p class="sub">Această aprobare nu autorizează plăți, trimitere de mesaje sau merge GitHub.</p>
 </dialog>
 <script src="/admin/admin.js" defer></script>
+<script src="/admin/sales.js" defer></script>
 </body>
 </html>
