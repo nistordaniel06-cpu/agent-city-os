@@ -6,6 +6,7 @@ const path=require('node:path');
 
 // Each test file runs in an independent worker; don't import server before setting a test token.
 process.env.AGENT_CITY_ACCESS_TOKEN='test-only-admin-secret-minimum-32-characters';
+process.env.MAX_TRANSLATIONS_PER_DAY='not-a-number';
 delete process.env.HYAGENT_API_BASE_URL;
 const {server}=require('../server');
 const root=path.join(__dirname,'..');
@@ -56,6 +57,7 @@ test('owner-only status never includes credentials, and local admin serves shell
   assert.equal(status.admin,true);
   assert.equal(status.storage,'browser-localStorage');
   assert.equal(status.hyagent.configured,false);
+  assert.equal(status.limits.maxTranslations,15);
   assert.ok(!JSON.stringify(status).includes('minimum-32-characters'));
   assert.ok(!JSON.stringify(status).includes('OPENAI_API_KEY'));
   const translateDenied=await fetch(base+'/api/hyagent/translate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:'Salut',sourceLanguage:'English',targetLanguage:'Spanish'})});
@@ -64,6 +66,12 @@ test('owner-only status never includes credentials, and local admin serves shell
   assert.equal(translateConfigured.status,503);
   const body=await translateConfigured.json();
   assert.match(body.error,/HYAGENT_API_BASE_URL/);
+  const longText='ă'.repeat(5000);
+  const longRequest=JSON.stringify({text:longText,sourceLanguage:'English',targetLanguage:'Spanish'});
+  assert.ok(new TextEncoder().encode(longRequest).length>9000);
+  const longTranslation=await fetch(base+'/api/hyagent/translate',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer test-only-admin-secret-minimum-32-characters'},body:longRequest});
+  assert.equal(longTranslation.status,503);
+  assert.match((await longTranslation.json()).error,/HYAGENT_API_BASE_URL/);
  }finally{
   await new Promise(resolve=>server.close(resolve));
  }

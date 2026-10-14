@@ -20,7 +20,8 @@ const AI_CONFIG=providerFromEnvironment();
 const aiClient=createAIClient({config:AI_CONFIG});
 const HY_CONFIG=hyagentConfig();
 const hyAgent=createHyAgent({config:HY_CONFIG});
-const MAX_TRANSLATIONS_PER_DAY=Math.max(1,Math.min(100,Number(process.env.MAX_TRANSLATIONS_PER_DAY||15)));
+const configuredTranslationLimit=Number(process.env.MAX_TRANSLATIONS_PER_DAY||15);
+const MAX_TRANSLATIONS_PER_DAY=Number.isFinite(configuredTranslationLimit)?Math.max(1,Math.min(100,configuredTranslationLimit)):15;
 const translationTimes=[];
 const MAX_RUNS_PER_DAY=Math.max(1,Math.min(100,Number(process.env.MAX_RUNS_PER_DAY||15)));
 let activeRun=false;
@@ -83,9 +84,9 @@ async function runAI(d){
   const context=global?'MISIUNE GLOBALĂ: coordonare agenție, fără proiect selectat.':'PROIECT: '+d.project.name+'\nTIP: '+d.project.category+'\nBRIEF: '+d.project.description;
   return aiClient.generate({instructions:prompt,input:context+'\nSARCINĂ: '+d.task.title+(global?hunterContext:''),maxTokens:2200});
 }
-function receiveJSON(req){return new Promise((resolve,reject)=>{
+function receiveJSON(req,maxBytes=9000){return new Promise((resolve,reject)=>{
  let data='',size=0;
- req.on('data',chunk=>{size+=chunk.length;if(size>9000){reject(new Error('Body prea mare (maximum 9 KB).'));req.destroy()}else data+=chunk});
+ req.on('data',chunk=>{size+=chunk.length;if(size>maxBytes){reject(new Error(`Body prea mare (maximum ${Math.round(maxBytes/1000)} KB).`));req.destroy()}else data+=chunk});
  req.on('end',()=>{try{resolve(JSON.parse(data))}catch{reject(new Error('JSON invalid.'))}});
  req.on('error',reject);
 })}
@@ -114,7 +115,7 @@ const server=http.createServer(async(req,res)=>{
   if(req.headers['content-type']?.split(';')[0].trim()!=='application/json')return send(res,415,{error:'Doar application/json.'});
   const now=Date.now();while(translationTimes.length&&translationTimes[0]<now-86400000)translationTimes.shift();
   if(translationTimes.length>=MAX_TRANSLATIONS_PER_DAY)return send(res,429,{error:'Limita zilnică locală de traduceri a fost atinsă.'});
-  let body;try{body=await receiveJSON(req)}catch(e){return send(res,400,{error:e.message})}
+  let body;try{body=await receiveJSON(req,25000)}catch(e){return send(res,400,{error:e.message})}
   try{const result=await hyAgent.translate(body);translationTimes.push(now);return send(res,200,result)}
   catch(e){return send(res,e.status&&e.status>=400&&e.status<600?e.status:502,{error:String(e.message||'Eroare HyAgent').slice(0,260)})}
  }
