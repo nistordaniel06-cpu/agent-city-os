@@ -49,7 +49,7 @@ function displayProjects(){
     return `<button class="projectRow ${active?'active':''}" data-project="${safeAttr(o.id)}"><span class="projectIcon">${catLabel(o)[0]}</span><span><b>${esc(o.name)}</b><small>${esc(catLabel(o)[1])} · ${count} misiuni${o.sample?' · exemplu':''}</small></span></button>`;
   }).join('')||'<p class="emptyState">Nu există proiecte. Creează primul proiect.</p>';
   document.querySelectorAll('[data-project]').forEach(el=>el.onclick=()=>selectProject(el.dataset.project));
-  $('#topTasks').textContent=p?projectTasks().length:0;
+  $('#topTasks').textContent=tasks.length;
   $('#credits').textContent=workspaces.length;
   document.querySelectorAll('#agentRows .status').forEach(b=>{b.textContent='ROL DEMO';b.classList.add('idle')});
   $('#completedBig').innerHTML=`${p?projectTasks().filter(t=>t.status==='done').length:0} <span style="font-size:12px;color:#93a1bf;font-weight:650">aprobate</span>`;
@@ -90,7 +90,7 @@ function projectDetail(){
    (p.repo?`<p class="hint">🔗 Repo: <a target="_blank" rel="noopener noreferrer" href="${safeAttr(safeUrl(p.repo))}" style="color:#8bd1ff">${esc(p.repo)}</a> (doar asociere; nu scrie automat în GitHub)</p>`:'')+
    `<div class="projectToolbar"><button id="editProject" class="smallBtn">✎ Editează proiectul</button><button id="projectNewTask" class="smallBtn">+ Misiune nouă</button><button id="viewProjectMissions" class="smallBtn">📋 Misiuni</button></div>`+
    `<h3 class="sectionTitle">ULTIMELE MISIUNI</h3>${ts.length?ts.slice(-3).reverse().map(t=>missionCard(t)).join(''):'<p class="emptyState">Nu există misiuni. Creează o misiune și atribuie-i un agent.</p>'}`);
- $('#editProject').onclick=()=>projectModal(p.id);$('#projectNewTask').onclick=()=>newTask();$('#viewProjectMissions').onclick=()=>allTaskModal();attachMissionActions();
+ $('#editProject').onclick=()=>projectModal(p.id);$('#projectNewTask').onclick=()=>newTask('command','project');$('#viewProjectMissions').onclick=()=>allTaskModal('project');attachMissionActions();
 }
 function missionCard(t){
  let agent=AGENT_ROLES[t.role]||t.role||t.agent||'Agent';
@@ -98,35 +98,73 @@ function missionCard(t){
     <footer><span class="state ${esc(t.status)}">${missionStatus(t.status)}</span><button class="smallBtn" data-task-view="${safeAttr(String(t.id))}">Detalii →</button></footer></div>`;
 }
 function attachMissionActions(){document.querySelectorAll('[data-task-view]').forEach(el=>el.onclick=()=>missionDetail(el.dataset.taskView))}
-allTaskModal=function(){let p=currentProject();
- modal('Misiunile proiectului',p?.name||'WORKSPACE',`<p class="subtitle">Sarcinile aparțin exclusiv acestui proiect. Nu se execută automat.</p><div class="projectToolbar"><button class="smallBtn" id="newTaskBoard">+ Misiune</button></div><div>${projectTasks().slice().reverse().map(missionCard).join('')||'<p class="emptyState">Nicio misiune creată.</p>'}</div>`);
- $('#newTaskBoard').onclick=()=>newTask();attachMissionActions();
+allTaskModal=function(scope='global'){
+ // Click events can reach this handler directly; never interpret them as a filter.
+ if(scope!=='project')scope='global';
+ const p=currentProject();
+ const globalTasks=tasks.filter(t=>t.scope==='global');
+ const related=scope==='project'?projectTasks():globalTasks;
+ modal(scope==='global'?'Misiunile agenției':'Misiunile proiectului',scope==='global'?'🌐 AGENȚIE · MISSION BOARD':p?.name||'WORKSPACE',
+ `<p class="subtitle">${scope==='global'?'Misiuni fără proiect asociat: analiză de oportunități, cercetare și coordonare.':'Misiuni limitate la proiectul ales.'} Nu se execută automat.</p>
+ <div class="projectToolbar"><button class="smallBtn" id="globalMissionTab">🌐 Agenție (${globalTasks.length})</button><button class="smallBtn" id="projectMissionTab">${p?'📁 '+esc(p.name):'📁 Proiect'} (${p?projectTasks().length:0})</button><button class="smallBtn" id="newTaskBoard">+ Misiune</button></div>
+ <div>${related.slice().reverse().map(missionCard).join('')||'<p class="emptyState">Nicio misiune în această categorie.</p>'}</div>`);
+ $('#globalMissionTab').onclick=()=>allTaskModal('global');
+ $('#projectMissionTab').onclick=()=>allTaskModal('project');
+ $('#newTaskBoard').onclick=()=>newTask('command',scope);
+ attachMissionActions();
 };
-function newTask(building='command'){
- const p=currentProject();if(!p){projectModal();return}
+function newTask(building='command',preferredScope='global'){
+ const p=currentProject();
  const defaultRole=({research:'researcher',studio:'marketer',factory:'developer',armory:'qa',archive:'planner',command:'operator',trading:'researcher'})[building]||'planner';
- modal('Misiune nouă',p.name,`<p class="subtitle">Descrie un rezultat concret. Poți folosi orice tip de proiect. Sarcina rămâne în așteptare până apeși Execută.</p>
-  <form id="taskForm"><label class="field">Ce trebuie să livreze agentul?<textarea id="taskDescription" required maxlength="4000" placeholder="Ex: Plan MVP și specificații pentru un joc mobil multiplayer"></textarea></label>
+ const defaultScope=preferredScope==='project'&&p?'project':'global';
+ const options=`<option value="global" ${defaultScope==='global'?'selected':''}>🌐 Agenția AI — misiune globală</option>${p?`<option value="project" ${defaultScope==='project'?'selected':''}>📁 Doar proiectul: ${esc(p.name)}</option>`:''}`;
+ modal('Misiune nouă','ALEGE DOMENIUL MISIUNII',`<p class="subtitle">Misiunile globale sunt pentru întreaga agenție: analiză de clienți, strategii și operațiuni. Cele pe proiect folosesc doar brief-ul proiectului ales.</p>
+  <form id="taskForm"><label class="field">Unde lucrează agentul?<select id="taskScope">${options}</select></label>
+  <p class="hint" id="scopeHint"></p>
+  <label class="field">Ce trebuie să livreze agentul?<textarea id="taskDescription" required maxlength="4000" placeholder="Ex: Analizează oportunitățile Hunter salvate și propune criterii pentru cele mai profitabile proiecte"></textarea></label>
   <label class="field">Agent responsabil<select id="taskRole">${Object.entries(AGENT_ROLES).map(([k,v])=>`<option value="${k}" ${k===defaultRole?'selected':''}>${v}</option>`).join('')}</select></label>
+  <label class="field"><input id="taskHunterConsent" type="checkbox" style="width:auto;vertical-align:middle;margin-right:7px"> Include oportunitățile Hunter salvate în analiza AI</label>
+  <p class="hint" id="hunterConsentHint">Opțional. Trimite către furnizorul AI maximum 12 anunțuri salvate (titlu, descriere scurtă, scor), fără notițele private sau tokenuri. Nu se preiau automat în lipsa acordului.</p>
   <button class="action" type="submit">📋 Creează misiunea</button></form>
-  <p class="note">Nicio trimitere de oferte, publicare, tranzacție sau modificare GitHub fără un flux separat de aprobare. Serverul poate genera livrabile text prin AI.</p>`);
- $('#taskForm').onsubmit=e=>{
-   e.preventDefault();let name=$('#taskDescription').value.trim();if(!name)return;
-   let t={id:uid(),name,projectId:p.id,role:$('#taskRole').value,status:'queued',created:new Date().toISOString(),output:'',usage:null};
-   tasks.push(t);refresh();close();log('Misiune pregătită: '+name.slice(0,60));missionDetail(t.id);
+  <p class="note">Nicio ofertă, publicare, tranzacție sau modificare GitHub fără un flux separat de aprobare. Serverul generează doar text.</p>`);
+ const updateHint=()=>{
+  const scope=$('#taskScope').value;
+  $('#scopeHint').textContent=scope==='global'?'🌐 Context global al agenției, fără asociere cu proiectul selectat.':'📁 Context exclusiv: '+(p?.name||'Proiect neselectat');
  };
+ $('#taskScope').onchange=updateHint;updateHint();
+ $('#taskForm').onsubmit=e=>{
+  e.preventDefault();
+  const name=$('#taskDescription').value.trim(),role=$('#taskRole').value,scope=$('#taskScope').value;
+  if(!name)return;
+  if(scope!=='global'&&scope!=='project')return alert('Alege domeniul misiunii.');
+  if(scope==='project'&&!p)return alert('Creează întâi un proiect.');
+  const t={id:uid(),name,scope,projectId:scope==='project'?p.id:'',role,status:'queued',created:new Date().toISOString(),output:'',usage:null,includeHunter:$('#taskHunterConsent').checked};
+  tasks.push(t);refresh();close();log('Misiune '+(scope==='global'?'globală':'de proiect')+' pregătită: '+name.slice(0,60));missionDetail(t.id);
+ };
+}
+function hunterMissionSnapshot(){
+ // Client-side Hunter data is local to this browser and MUST be explicitly opted in.
+ if(typeof hunterSaved==='undefined'||!Array.isArray(hunterSaved))return [];
+ return hunterSaved.slice(0,12).map(o=>({
+  title:String(o.title||'').slice(0,180),
+  description:String(o.description||'').slice(0,240),
+  source:String(o.source||'').slice(0,70),
+  stage:String(o.state||'saved').slice(0,30),
+  score:Number.isFinite(Number(o.score))?Math.max(0,Math.min(100,Number(o.score))):0
+ })).filter(o=>o.title);
 }
 function missionDetail(id){
  let t=tasks.find(x=>String(x.id)===String(id));if(!t)return allTaskModal();
- let p=workspaces.find(x=>x.id===t.projectId);if(!p)return allTaskModal();
+ const global=t.scope==='global';
+ let p=global?null:workspaces.find(x=>x.id===t.projectId);if(!global&&!p)return allTaskModal();
  const mode=connectedBackend&&configuredBackend?'Server AI '+(activeAIProvider||'')+' conectat':'Fără AI conectat (mod local)';
- modal('Misiune · '+(p.name),'AGENT WORK ORDER',
-   `<div class="projectMeta"><span>${esc(AGENT_ROLES[t.role]||t.role||'Agent')}</span><span>${missionStatus(t.status)}</span></div>
+ modal('Misiune · '+(global?'🌐 Agenția AI':p.name),'AGENT WORK ORDER',
+   `<div class="projectMeta"><span>${esc(AGENT_ROLES[t.role]||t.role||'Agent')}</span><span>${missionStatus(t.status)}</span><span>${global?'🌐 Global':'📁 '+esc(p.name)}</span>${t.includeHunter?'<span>📌 Hunter (cu acord)</span>':''}</div>
     <div class="resultText">${esc(t.name)}</div>
     ${t.output?`<h3 class="sectionTitle">LIVRABIL AI · NECESITĂ VERIFICARE UMANĂ</h3><div class="resultText">${esc(t.output)}</div>`:''}
     <div class="projectToolbar">
       ${['queued','failed'].includes(t.status)?`<button class="smallBtn approve" id="runMission">▶ Execută cu AI</button>`:''}
-      ${t.role==='developer'&&p.repo?`<button class="smallBtn approve" id="prepareGitHub">🔧 Pregătește patch GitHub</button>`:''}
+      ${!global&&t.role==='developer'&&p.repo?`<button class="smallBtn approve" id="prepareGitHub">🔧 Pregătește patch GitHub</button>`:''}
       ${t.githubPreview?`<button class="smallBtn" id="showGitHubPreview">👁️ Vezi propunerea GitHub</button>`:''}
       ${t.status==='review'?`<button class="smallBtn approve" id="approveMission">✓ Aprob livrabilul</button>`:''}
       ${t.output?`<button class="smallBtn" id="copyResult">Copiază rezultatul</button>`:''}
@@ -139,8 +177,8 @@ function missionDetail(id){
  if($('#showGitHubPreview'))$('#showGitHubPreview').onclick=()=>githubPreview(t.id);
  if($('#approveMission'))$('#approveMission').onclick=()=>{t.status='done';refresh();log('Livrabil aprobat: '+t.name.slice(0,48));missionDetail(t.id)};
  if($('#copyResult'))$('#copyResult').onclick=async()=>{try{await navigator.clipboard.writeText(t.output);alert('Rezultat copiat!')}catch{alert('Selectează textul din rezultatul afișat și copiază-l manual.')}};
- $('#backToMissions').onclick=allTaskModal;
- $('#deleteMission').onclick=()=>{if(!confirm('Ștergi misiunea?'))return;tasks=tasks.filter(x=>x.id!==t.id);refresh();allTaskModal()};
+ $('#backToMissions').onclick=()=>allTaskModal(global?'global':'project');
+ $('#deleteMission').onclick=()=>{if(!confirm('Ștergi misiunea?'))return;tasks=tasks.filter(x=>x.id!==t.id);refresh();allTaskModal(global?'global':'project')};
 }
 async function probeBackend(){
  try{let ctrl=new AbortController();let timeout=setTimeout(()=>ctrl.abort(),1700);
@@ -212,13 +250,15 @@ async function publishGithub(id){
  finally{lockRun=false}
 }
 async function startTask(id){
- if(lockRun)return;let t=tasks.find(x=>x.id===id),p=workspaces.find(x=>x.id===t?.projectId);
- if(!t||!p)return;if(!connectedBackend){alert('Acum funcționează doar dashboard-ul local. Pentru AI real pornește serverul Node.js din arhivă. Vezi README.');return}
+ if(lockRun)return;
+ const t=tasks.find(x=>x.id===id);if(!t)return;
+ const global=t.scope==='global';const p=global?null:workspaces.find(x=>x.id===t.projectId);
+ if(!global&&!p)return;if(!connectedBackend){alert('Acum funcționează doar dashboard-ul local. Pentru AI real pornește serverul Node.js din arhivă. Vezi README.');return}
  if(!configuredBackend){alert('Serverul există, dar cheia furnizorului AI selectat nu este configurată. Pentru Groq adaugă GROQ_API_KEY și AI_PROVIDER=groq în Vercel.');return}
  if(!authToken){authToken=prompt('Tokenul tău de acces (AGENT_CITY_ACCESS_TOKEN), păstrat doar în memoria paginii:')||'';if(!authToken)return}
  lockRun=true;t.status='running';refresh();missionDetail(t.id);
  try{
-   let response=await fetch('/api/run',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+authToken},body:JSON.stringify({project:{name:p.name,category:p.category,description:p.description},task:{title:t.name,role:t.role}})});
+   let response=await fetch('/api/run',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+authToken},body:JSON.stringify({...(global?{scope:'global'}:{scope:'project',project:{name:p.name,category:p.category,description:p.description}}),task:{title:t.name,role:t.role},...(t.includeHunter?{hunterLeads:hunterMissionSnapshot()}: {})})});
    let data=await response.json();if(!response.ok)throw new Error(data.error||'Eroare server.');
    t.output=data.output;t.usage=data.usage||null;t.status='review';log('Livrabil pentru verificare: '+t.name.slice(0,60));
  }catch(error){t.status='failed';log('Eroare misiune: '+error.message);alert(error.message);if(/token|401|403|autentific/i.test(error.message))authToken=''}
@@ -231,7 +271,7 @@ function openBuilding(b){
  `<p class="note">Departamentul nu are acces la conturi externe sau bani. Orice execuție AI este pornită explicit de tine și produce doar un livrabil text.</p>`);
  $('#buildingNewTask').onclick=()=>newTask(b.id);$('#buildingProject').onclick=projectDetail;$('#buildingBoard').onclick=allTaskModal;
 }
-function backup(){let data={schema:2,exportedAt:new Date().toISOString(),projects:workspaces,tasks:tasks.filter(t=>t.projectId),agents:agents};let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});let u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download='agent-city-os-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
+function backup(){let data={schema:2,exportedAt:new Date().toISOString(),projects:workspaces,tasks:tasks.filter(t=>t.projectId||t.scope==='global'),agents:agents};let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});let u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download='agent-city-os-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
 function restoreBackup(file){
  if(!file)return;
  if(file.size>2000000){alert('Backup prea mare (maximum 2 MB).');return}
@@ -242,7 +282,7 @@ function restoreBackup(file){
    if(!confirm('Importul înlocuiește proiectele și misiunile locale curente. Continui?'))return;
    workspaces=data.projects.map(p=>({id:p.id,name:p.name,category:CATEGORY[p.category]?p.category:'other',description:String(p.description||'').slice(0,2500),repo:safeUrl(p.repo||''),status:p.status||'idea',sample:!!p.sample}));
    const ids=new Set(workspaces.map(p=>p.id));
-   tasks=data.tasks.filter(t=>ids.has(t.projectId)).map(t=>({id:t.id,projectId:t.projectId,name:t.name,role:AGENT_ROLES[t.role]?t.role:'planner',status:['queued','review','done','failed'].includes(t.status)?t.status:'queued',created:t.created,output:String(t.output||'').slice(0,20000),usage:null}));
+   tasks=data.tasks.filter(t=>t.scope==='global'||ids.has(t.projectId)).map(t=>({id:t.id,projectId:t.scope==='global'?'':t.projectId,scope:t.scope==='global'?'global':'project',name:t.name,role:AGENT_ROLES[t.role]?t.role:'planner',includeHunter:t.includeHunter===true,status:['queued','review','done','failed'].includes(t.status)?t.status:'queued',created:t.created,output:String(t.output||'').slice(0,20000),usage:null}));
    currentProjectId=workspaces[0]?.id||'';saveProjects();refresh();log('Backup importat cu succes.');
  }).catch(e=>alert('Import eșuat: '+e.message)).finally(()=>{$('#restoreFile').value=''})
 }
@@ -250,15 +290,15 @@ function restoreBackup(file){
 $('#projectSelect').onchange=e=>selectProject(e.target.value);
 $('#createProjectTop').onclick=()=>projectModal();
 $('#createProjectSide').onclick=()=>projectModal();
-$('#showProjectTasks').onclick=allTaskModal;
+$('#showProjectTasks').onclick=()=>allTaskModal('global');
 $('#backupBtn').onclick=backup;
 $('#restoreBtn').onclick=()=>$('#restoreFile').click();
 $('#restoreFile').onchange=e=>restoreBackup(e.target.files?.[0]);
-$('#missionBtn').onclick=()=>newTask();
-$('#allTasks').onclick=allTaskModal;
+$('#missionBtn').onclick=()=>newTask('command','global');
+$('#allTasks').onclick=()=>allTaskModal('global');
 $('#addAgent').onclick=()=>{
  modal('Echipă de agenți','AGENT ROLES',`<p class="subtitle">Rolurile pot fi atribuite fiecărui proiect independent, fără costuri de recrutare virtuală.</p>`+Object.values(AGENT_ROLES).map(x=>`<div class="rowline">${esc(x)}<span class="badge">Disponibil</span></div>`).join('')+`<button class="action" id="toMission">+ Dă un task</button>`);$('#toMission').onclick=()=>newTask()
 };
 // Existing task entries in the old demo remain in storage but are never attributed to new projects.
-for(let t of tasks){if(!t.projectId)t.status=t.status==='done'?'legacy':t.status}
+for(let t of tasks){if(!t.projectId&&t.scope!=='global')t.status=t.status==='done'?'legacy':t.status}
 refresh();probeBackend();
