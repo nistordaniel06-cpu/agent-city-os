@@ -38,6 +38,63 @@ function projectTasks(pid=currentProjectId){return tasks.filter(t=>t.projectId==
 function missionStatus(s){return ({queued:'În așteptare',running:'În execuție',review:'De aprobat',done:'Aprobat',failed:'Eroare',legacy:'Demo vechi'})[s]||'În așteptare'}
 function safeUrl(url){try{let u=new URL(url);return ['https:','http:'].includes(u.protocol)?u.href:''}catch{return ''}}
 function safeAttr(s){return esc(s).replaceAll("'",'&#39;')}
+
+const CODE_REVIEW_REPO='nistordaniel06-cpu/agent-city-os';
+const CODE_REVIEW_BASE='https://github.com/'+CODE_REVIEW_REPO;
+function codeReviewItemURL(number){
+ const n=Number(number);
+ return Number.isSafeInteger(n)&&n>0?CODE_REVIEW_BASE+'/pull/'+n:'';
+}
+function showCodeReviewer(){
+ modal('🛡️ OpenCodeReview','GROQ · GITHUB PULL REQUESTS',
+  '<p class="subtitle">Agentul <b>Code Reviewer</b> verifică automat modificările propuse în PR-urile din <b>agent-city-os</b>, prin GitHub Actions. Rezultatele sunt observații pentru verificarea ta, nu o aprobare și nu un merge.</p>'+
+  '<div class="projectToolbar">'+
+  '<a href="'+CODE_REVIEW_BASE+'/actions/workflows/code-review-groq.yml" target="_blank" rel="noopener noreferrer" class="smallBtn">🛡️ GitHub Actions ↗</a>'+
+  '<a href="'+CODE_REVIEW_BASE+'/pulls" target="_blank" rel="noopener noreferrer" class="smallBtn">🔎 Toate PR-urile ↗</a>'+
+  '<button class="smallBtn" id="codeReviewReload">↻ Actualizează</button></div>'+
+  '<h3 class="sectionTitle">PR-URI DESCHISE</h3><div id="codeReviewPulls"><p class="hint">Se încarcă informațiile publice GitHub…</p></div>'+
+  '<h3 class="sectionTitle">ULTIMELE RULĂRI OPENCodeReview</h3><div id="codeReviewRuns"><p class="hint">Se încarcă starea verificărilor…</p></div>'+
+  '<p class="note">Pentru rularea automată trebuie să adaugi <b>OCR_GROQ_API_KEY</b> ca secret în <b>GitHub → agent-city-os → Settings → Secrets and variables → Actions</b>. Cheia din Vercel nu este transmisă automat. Workflow-ul nu face merge, nu execută codul PR-ului și nu trimite modificări. Pentru protecție obligatorie la merge setează un Ruleset pe main cu verificări și aprobare umană. Integrarea se aplică momentan doar acestui repository.</p>');
+ $('#codeReviewReload').onclick=loadCodeReviewStatus;
+ loadCodeReviewStatus();
+}
+async function loadCodeReviewStatus(){
+ const pulls=$('#codeReviewPulls'),runs=$('#codeReviewRuns');
+ if(!pulls||!runs)return;
+ pulls.innerHTML='<p class="hint">Se caută PR-urile…</p>';
+ runs.innerHTML='<p class="hint">Se caută verificările…</p>';
+ const endpoint='https://api.github.com/repos/'+CODE_REVIEW_REPO;
+ const request=async path=>{
+  const response=await fetch(endpoint+path,{cache:'no-store',headers:{Accept:'application/vnd.github+json'}});
+  if(!response.ok)throw new Error('GitHub API HTTP '+response.status);
+  return response.json();
+ };
+ const [prResult,runResult]=await Promise.allSettled([
+  request('/pulls?state=open&per_page=10'),
+  request('/actions/workflows/code-review-groq.yml/runs?per_page=5')
+ ]);
+ if($('#codeReviewPulls')!==pulls||$('#codeReviewRuns')!==runs)return;
+ if(prResult.status==='fulfilled'&&Array.isArray(prResult.value)){
+  const items=prResult.value.filter(p=>codeReviewItemURL(p.number));
+  pulls.innerHTML=items.length?items.map(p=>
+   '<div class="taskItem"><h4>#'+Number(p.number)+' · '+esc(String(p.title||'PR fără titlu').slice(0,150))+'</h4>'+
+   '<p>Deschis · review-ul poate conține observații care trebuie verificate.</p>'+
+   '<footer><span class="state queued">Necesită verificare umană</span>'+
+   '<a class="smallBtn" target="_blank" rel="noopener noreferrer" href="'+codeReviewItemURL(p.number)+'">Vezi PR & observații ↗</a></footer></div>').join(''):
+   '<p class="emptyState">Nu sunt PR-uri deschise în acest repository.</p>';
+ }else pulls.innerHTML='<p class="hint">Nu pot citi PR-urile publice acum. Verifică direct în GitHub (posibilă limită API).</p>';
+ if(runResult.status==='fulfilled'&&Array.isArray(runResult.value?.workflow_runs)){
+  const items=runResult.value.workflow_runs.filter(r=>Number.isSafeInteger(r.id)&&r.id>0);
+  runs.innerHTML=items.length?items.map(r=>{
+   const state=r.status==='completed'?(r.conclusion==='success'?'Rulare finalizată':'Rulare '+String(r.conclusion||'încheiată')):'În curs / în așteptare';
+   const related=r.pull_requests?.[0]?.number;
+   const label=related?'PR #'+related:'GitHub Actions';
+   const url=CODE_REVIEW_BASE+'/actions/runs/'+r.id;
+   return '<div class="rowline"><span>'+esc(label)+' · '+esc(state)+'</span><a target="_blank" rel="noopener noreferrer" class="smallBtn" href="'+url+'">Detalii ↗</a></div>';
+  }).join(''):'<p class="emptyState">Nu există încă rulări OpenCodeReview. Va porni la următorul PR eligibil după configurarea cheii.</p>';
+ }else runs.innerHTML='<p class="hint">Nu pot citi ultimele rulări acum. Deschide GitHub Actions pentru detalii.</p>';
+}
+
 function displayProjects(){
   if(!workspaces.some(p=>p.id===currentProjectId)) currentProjectId=workspaces[0]?.id||'';
   saveProjects();let p=currentProject();
@@ -52,6 +109,17 @@ function displayProjects(){
   $('#topTasks').textContent=tasks.length;
   $('#credits').textContent=workspaces.length;
   document.querySelectorAll('#agentRows .status').forEach(b=>{b.textContent='ROL DEMO';b.classList.add('idle')});
+  // This row represents a real GitHub Actions workflow, not a simulated NPC.
+  const reviewers=$('#agentRows');
+  if(reviewers){
+   const card=document.createElement('div');
+   card.className='agentRow';
+   card.innerHTML='<div class="avatar">🛡️</div><div class="agentInfo"><b>OpenCodeReview</b><p>Code Reviewer · GitHub Actions + Groq</p></div><button class="smallBtn" type="button" id="openCodeReview">PR Reviews ↗</button>';
+   reviewers.appendChild(card);
+   $('#openCodeReview').onclick=showCodeReviewer;
+   $('#teamsize').textContent=(agents.length+1)+' agenți · 1 integrare';
+   $('#agentCount').textContent=agents.length+1;
+  }
   $('#completedBig').innerHTML=`${p?projectTasks().filter(t=>t.status==='done').length:0} <span style="font-size:12px;color:#93a1bf;font-weight:650">aprobate</span>`;
   $('#runningStat').textContent=projectTasks().filter(t=>t.status==='running').length;
   $('#queuedStat').textContent=projectTasks().filter(t=>['queued','review'].includes(t.status)).length;
