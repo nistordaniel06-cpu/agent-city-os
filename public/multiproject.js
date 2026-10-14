@@ -113,15 +113,19 @@ function displayProjects(){
   document.querySelectorAll('#agentRows .status').forEach(b=>{b.textContent='ROL DEMO';b.classList.add('idle')});
   // This row represents a real GitHub Actions workflow, not a simulated NPC.
   const reviewers=$('#agentRows');
-  if(reviewers){
+ if(reviewers){
+  let button=$('#openCodeReview');
+  if(!button){
    const card=document.createElement('div');
    card.className='agentRow';
    card.innerHTML='<div class="avatar">🛡️</div><div class="agentInfo"><b>OpenCodeReview</b><p>Code Reviewer · GitHub Actions + Groq</p></div><button class="smallBtn" type="button" id="openCodeReview">PR Reviews ↗</button>';
    reviewers.appendChild(card);
-   $('#openCodeReview').onclick=showCodeReviewer;
-   $('#teamsize').textContent=(agents.length+1)+' agenți · 1 integrare';
-   $('#agentCount').textContent=agents.length+1;
+   button=$('#openCodeReview');
   }
+  button.onclick=showCodeReviewer;
+  $('#teamsize').textContent=(agents.length+1)+' agenți · 1 integrare';
+  $('#agentCount').textContent=agents.length+1;
+ }
   $('#completedBig').innerHTML=`${p?projectTasks().filter(t=>t.status==='done').length:0} <span style="font-size:12px;color:#93a1bf;font-weight:650">aprobate</span>`;
   $('#runningStat').textContent=projectTasks().filter(t=>t.status==='running').length;
   $('#queuedStat').textContent=projectTasks().filter(t=>['queued','review'].includes(t.status)).length;
