@@ -54,3 +54,44 @@ test('pipeline editor confirms manually sent milestones and source mirrors publi
  assert.match(source,/confirm\('Confirmi că această etapă reflectă o acțiune REALĂ/);
  assert.equal(source,publicSource);
 });
+
+
+test('click Event opens all saved cards instead of filtering by event object',()=>{
+ const begin=source.indexOf('const HUNTER_STAGES=');
+ const finish=source.indexOf('// Daily leads are public read-only signals',begin);
+ assert.ok(begin>=0&&finish>begin,'Hunter card and dashboard functions are available');
+ const ctx={
+  hunterSaved:Array.from({length:10},(_,i)=>({
+   id:'lead-'+i, title:'Client prospect '+i, source:'Reddit',
+   kind:'request-for-work',state:'saved',priority:'normal',
+   description:'Need a website',url:'https://www.reddit.com/r/forhire/',
+   score:64,savedAt:'2026-10-14T02:00:00Z'
+  })),
+  hunterLatest:[],document:{querySelectorAll(){return []}},
+  modal(title,subtitle,html){ctx.lastHTML=html},
+  $(){return {}},hunterLeadsOpen(){},hunterSearchForm(){},hunterManualForm(){},
+  hunterExport(){},esc(s){return String(s)},safeUrl(s){return s},safeAttr(s){return s},
+  log(){},confirm(){return true},getLocal(){return null},setLocal(){}
+ };
+ vm.createContext(ctx);
+ vm.runInContext(source.slice(begin,finish),ctx);
+ // Assigning hunterBoard directly to onclick passes the click event as stage.
+ vm.runInContext('hunterBoard({type:"click",isTrusted:true})',ctx);
+ assert.match(ctx.lastHTML,/10 salvate/);
+ assert.match(ctx.lastHTML,/Client prospect 0/);
+ assert.match(ctx.lastHTML,/Client prospect 9/);
+ assert.doesNotMatch(ctx.lastHTML,/Nicio oportunitate în această etapă/);
+ assert.equal((ctx.lastHTML.match(/class="hunterItem"/g)||[]).length,10);
+ vm.runInContext('hunterBoard("qualified")',ctx);
+ assert.match(ctx.lastHTML,/Nicio oportunitate în această etapă/);
+});
+
+test('Hunter snippets remove old escaped Reddit HTML before rendering',()=>{
+ const begin=source.indexOf('function hunterPlainText(value)');
+ const finish=source.indexOf('function hunterCard(',begin);
+ assert.ok(begin>=0&&finish>begin);
+ const ctx={};vm.createContext(ctx);vm.runInContext(source.slice(begin,finish),ctx);
+ ctx.legacy='&lt;!-- SC_OFF --&gt;&lt;div class="md"&gt;&lt;p&gt;Looking for a Node.js developer &amp;amp; website help.&lt;/p&gt;&lt;/div&gt;';
+ assert.equal(vm.runInContext('hunterPlainText(legacy)',ctx),'Looking for a Node.js developer & website help.');
+ assert.equal(vm.runInContext('hunterPlainText("<div>Hello</div>")',ctx),'Hello');
+});
