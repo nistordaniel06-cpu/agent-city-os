@@ -46,15 +46,34 @@ function hunterBoard(){
 }
 // Daily leads are public read-only signals produced by GitHub Actions: no token, no outreach.
 let hunterDailyReport = null;
+let hunterDailySource = '';
 async function hunterLeadsOpen(){
  modal('Hunter · Caută clienți','RAPORT PUBLIC · FĂRĂ CONTACTARE',`<p class="subtitle">Încarc lista zilnică de cereri și semnale publice. Nu reprezintă contracte confirmate.</p>`);
  try {
-  const response=await fetch('/leads-daily.json',{cache:'no-store'});
-  if(!response.ok)throw Error('Raportul nu a fost publicat încă: HTTP '+response.status);
-  const report=await response.json();
-  if(!report || !Array.isArray(report.results) || report.schema!==1)throw Error('Formatul raportului este invalid.');
-  hunterDailyReport=report;
-  hunterLeadsDisplay('all');
+  // Scheduled commits may be blocked by Vercel's Verified Commits policy.
+  // Read the public GitHub digest first so the UI stays fresh without a deploy.
+  // Keep the bundled file as an offline/source-unavailable fallback.
+  const sources=[
+   {url:'https://raw.githubusercontent.com/nistordaniel06-cpu/agent-city-os/main/public/leads-daily.json',label:'GitHub (raport actualizat)'},
+   {url:'/leads-daily.json',label:'Vercel (copie din deployment; poate fi veche)'}
+  ];
+  let lastError=null;
+  for(const candidate of sources){
+   const controller=new AbortController();
+   const timeout=setTimeout(()=>controller.abort(),6500);
+   try {
+    const response=await fetch(candidate.url,{cache:'no-store',signal:controller.signal});
+    if(!response.ok)throw Error('HTTP '+response.status);
+    const report=await response.json();
+    if(!report || !Array.isArray(report.results) || report.schema!==1)throw Error('Formatul raportului este invalid.');
+    hunterDailyReport=report;
+    hunterDailySource=candidate.label;
+    hunterLeadsDisplay('all');
+    return;
+   }catch(e){lastError=e}
+   finally{clearTimeout(timeout)}
+  }
+  throw lastError||Error('Nu pot încărca raportul Hunter.');
  }catch(e){
   modal('Hunter · Caută clienți','RAPORT NEDISPONIBIL',`<p class="note">${esc(String(e.message))}</p><p class="subtitle">Verifică raportul de rulare din <a href="https://github.com/nistordaniel06-cpu/agent-city-os/actions/workflows/hunter-daily.yml" target="_blank" rel="noopener noreferrer">GitHub Actions</a>. Lista este actualizată prin workflowul programat, nu prin trimiterea de mesaje automate.</p><button class="smallBtn" id="hunterLeadsBack">← Înapoi</button>`);
   $('#hunterLeadsBack').onclick=hunterBoard;
@@ -69,7 +88,7 @@ function hunterLeadsDisplay(topic='all'){
  hunterCheckedAt=report.generatedAt||'';
  hunterErrors=report.errors||[];
  const generated=report.generatedAt?esc(new Date(report.generatedAt).toLocaleString('ro-RO')):'Nu a rulat încă';
- modal('Hunter · Clienți potențiali','CERERI PUBLICE · NEVERIFICATE',`<p class="subtitle"><b>Raport din ${generated}.</b> ${filtered.length} semnale relevante din ${items.length} total. Cererile Reddit marcate [Hiring] au un indiciu mai puternic decât comentariile Hacker News, dar niciuna nu garantează un client sau un buget.</p>
+ modal('Hunter · Clienți potențiali','CERERI PUBLICE · NEVERIFICATE',`<p class="subtitle"><b>Raport din ${generated}.</b> Sursă: ${esc(hunterDailySource||'necunoscută')}. ${filtered.length} semnale relevante din ${items.length} total. Cererile Reddit marcate [Hiring] au un indiciu mai puternic decât comentariile Hacker News, dar niciuna nu garantează un client sau un buget.</p>
  <label class="field">Domeniu <select id="hunterLeadsTopic"><option value="all">Toate industriile</option>${Object.entries(HUNTER_FILTERS).filter(([k])=>k!=='all').map(([k,v])=>`<option value="${k}" ${topic===k?'selected':''}>${esc(v)}</option>`).join('')}</select></label>
  <div class="projectToolbar"><button class="smallBtn" id="hunterLeadsReload">↻ Reîncarcă raportul</button><button class="smallBtn" id="hunterLeadsSaved">📌 Oportunități salvate</button><a class="smallBtn" href="https://github.com/nistordaniel06-cpu/agent-city-os/actions/workflows/hunter-daily.yml" target="_blank" rel="noopener noreferrer">Vezi automatizarea ↗</a></div>
  ${hunterErrors.length?`<p class="note">Surse temporar indisponibile: ${esc(hunterErrors.join('; ').slice(0,500))}</p>`:''}
