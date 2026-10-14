@@ -24,17 +24,20 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - name: Require GitHub Actions Groq secret
+      - name: Check GitHub Actions Groq secret
         id: configuration
         env:
           GROQ_OCR_API_KEY: ${{ secrets.OCR_GROQ_API_KEY }}
         run: |
           if [ -z "$GROQ_OCR_API_KEY" ]; then
-            echo "::error::Add OCR_GROQ_API_KEY under Settings > Secrets and variables > Actions in THIS GitHub repository."
-            exit 1
+            echo "::warning::OCR_GROQ_API_KEY is not configured; skipping the optional code review."
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Review PR diff using OpenCodeReview (Groq)
+        if: steps.configuration.outputs.configured == 'true'
         # Pin source, not @main. The fork is user-selected.
         uses: nistordaniel06-cpu/open-code-review@b842659ed903743fe0afeb50eead62ca47de3deb
         with:
