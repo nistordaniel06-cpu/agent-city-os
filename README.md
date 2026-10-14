@@ -171,3 +171,13 @@ New **Hunter daily client signals** action runs automatically once a day (07:17 
 - În dashboard poți filtra după etapă, vedea acțiunile restante și prioritiza leadurile după data de urmărit, prioritatea manuală și scorul euristic.
 - **Niciun mesaj sau ofertă nu se expediază automat**. Stările nu confirmă independent un contract. Datele salvate, notițele și termenele sunt în `localStorage` pe dispozitivul curent; exportă JSON pentru backup. Nu există încă sincronizare, notificări push sau inbox conectat.
 - Pentru verificări: `npm test` și `node --check hunter-ui.js`. Nu este necesară o cheie AI pentru pipeline-ul manual.
+
+## Misiuni globale vs. misiuni pe proiect (Agency Mission Board)
+
+- Butonul **+ MISIUNE NOUĂ** pornește cu domeniul **🌐 Agenția AI — misiune globală**: cercetare generală, selecție clienți, strategie și operațiuni, fără asociere forțată cu proiectul selectat în bara de sus.
+- În formular poți alege explicit **📁 Doar proiectul selectat**. Pentru misiuni începute din pagina unui proiect, acesta este contextul implicit. Proiectele rămân izolate.
+- **Misiunile agenției** și **Misiunile proiectului** au file separate în Mission Board. Misiunile deja create nu își schimbă automat proiectul.
+- O misiune de proiect în așteptare sau eșuată poate fi mutată manual la agenție, fără să afecteze celelalte misiuni. Pentru misiunile globale poți activa sau dezactiva partajarea datelor Hunter.
+- **Hunter nu este sincronizat automat cu AI-ul**: numai dacă bifezi «Include oportunitățile Hunter salvate» sau activezi opțiunea din detalii, se trimite la următoarea execuție un sumar de maximum 10 anunțuri din acest browser (titlu, descriere scurtă, sursă, etapă, scor). Nu se trimit notițe private, tokenuri sau toate datele brute.
+- Dacă nu atașezi date Hunter, agentului i se comunică explicit că nu le poate vedea. Rezultatele sunt propuneri text, nu analize confirmate ale unor leaduri inaccesibile.
+- Back-upurile JSON schema 2 exportă și reimportă misiunile globale fără a le atribui proiectelor demo.
