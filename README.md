@@ -136,6 +136,7 @@ New **Hunter daily client signals** action runs automatically once a day (07:17 
 
 - Results: `public/leads-daily.json` (a **public** report in this **public** GitHub repository). Excerpted email addresses are redacted.
 - In the UI, open **Hunter AI → 🎯 Caută clienți (zilnic)** to filter/sort and save relevant signals.
+- În versiunea Vercel, interfața încearcă întâi raportul public actualizat de pe `raw.githubusercontent.com/nistordaniel06-cpu/agent-city-os/main/public/leads-daily.json`. Dacă GitHub este indisponibil sau raportul e invalid, folosește copia din deployment și o etichetează ca posibil veche. Așa, commiturile automate nesemnate nu împiedică afișarea raportului proaspăt, chiar dacă Vercel le anulează. Repo-ul trebuie să rămână public pentru acest flux fără autentificare.
 - Github Actions: `.github/workflows/hunter-daily.yml` (`workflow_dispatch` is supported). If the Action cannot commit, enable `Workflow permissions: Read and write` in repository Settings → Actions → General; do not supply tokens to the chat.
 - If all providers fail, the previous report is preserved and Actions reports a failure. Partial upstream errors are included in the digest.
 - **Nobody is contacted automatically.** Every lead must be checked at the source and the owner must approve any offer.
