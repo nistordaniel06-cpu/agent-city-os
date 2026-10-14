@@ -10,17 +10,48 @@ let freelancerApiConnected=false;
 const HUNTER_FILTERS={all:'Toate',web:'Websites',software:'Software & API',automation:'Automatizări AI',commerce:'Magazine online',design:'Design & UX',marketing:'Marketing & SEO'};
 function hunterStore(){hunterSaved=hunterSaved.slice(-150);setLocal(HUNTER_KEY,JSON.stringify(hunterSaved))}
 function hunterShort(id){return hunterSaved.find(x=>x.id===id)}
+const HUNTER_STAGES={saved:'Salvat',qualified:'Calificat',drafted:'Ofertă în lucru',approved:'Aprobat pentru trimitere manuală',sent:'Trimis manual',followup:'De urmărit',won:'Câștigat',lost:'Pierdut',rejected:'Respins'};
+const HUNTER_PRIORITIES={high:'Ridicată',normal:'Normală',low:'Scăzută'};
+function hunterToday(){
+ const date=new Date(),pad=n=>String(n).padStart(2,'0');
+ return date.getFullYear()+'-'+pad(date.getMonth()+1)+'-'+pad(date.getDate());
+}
+function hunterDue(o,today=hunterToday()){
+ return typeof o.nextActionAt==='string'&&/^\\d{4}-\\d{2}-\\d{2}$/.test(o.nextActionAt)
+  &&o.nextActionAt<=today&&!['won','lost','rejected'].includes(o.state);
+}
+function hunterPipelineRows(rows,stage='all',today=hunterToday()){
+ const rank={high:0,normal:1,low:2};
+ return rows.filter(o=>stage==='all'||(stage==='due'?hunterDue(o,today):o.state===stage))
+  .slice().sort((a,b)=>{
+   const due=Number(hunterDue(b,today))-Number(hunterDue(a,today));
+   if(due)return due;
+   const priority=(rank[a.priority]??1)-(rank[b.priority]??1);
+   if(priority)return priority;
+   return Number(b.score||0)-Number(a.score||0)||String(b.savedAt||'').localeCompare(String(a.savedAt||''));
+  });
+}
+function hunterPipelineSummary(rows,today=hunterToday()){
+ return {total:rows.length,due:rows.filter(o=>hunterDue(o,today)).length,
+  ready:rows.filter(o=>o.state==='approved').length,
+  sent:rows.filter(o=>['sent','followup'].includes(o.state)).length,
+  won:rows.filter(o=>o.state==='won').length};
+}
 function hunterCard(o,mode='live'){
  const s=mode==='saved',title=esc(o.title),company=esc(o.company||'Companie nespecificată'),source=esc(o.source||'Manual'),link=safeUrl(o.url||'');
  const kind=({ 'contract-mention':'Mențiune contract/freelance','employment-mention':'Mențiune angajare',unspecified:'Tip neconfirmat','marketplace-project':'Proiect freelance (platformă)','request-for-work':'Cerere publică [Hiring] (neconfirmată)','lead-signal':'Posibilă nevoie de servicii (neconfirmată)'})[o.kind]||'Tip neconfirmat';
  const freshness=o.postedAt?new Date(o.postedAt).toLocaleDateString('ro-RO'):'Dată necunoscută';
  const idx=mode==='saved'?hunterSaved.findIndex(x=>x.id===o.id):hunterLatest.findIndex(x=>x.id===o.id);
- return `<article class="hunterItem"><div class="hunterMeta"><span>${source}</span><span>${esc(kind)}</span><span>${esc(freshness)}</span>${!s?`<span>Potrivire orientativă ${Number(o.score||0)}/100</span>`:''}</div>
+ const stage=HUNTER_STAGES[o.state]||'Salvat';
+ const due=s&&hunterDue(o);
+ return `<article class="hunterItem"><div class="hunterMeta"><span>${source}</span><span>${esc(kind)}</span><span>${esc(freshness)}</span>${!s?`<span>Potrivire orientativă ${Number(o.score||0)}/100</span>`:`<span>${esc(stage)}</span><span>Prioritate: ${esc(HUNTER_PRIORITIES[o.priority]||'Normală')}</span>`}${due?'<span>⚠️ Acțiune restantă</span>':''}</div>
  <h4>${title}</h4><p class="hunterCompany">${company}</p>
  ${o.budget?`<p class="hunterBudget">Buget declarat: ${esc(o.budget.minimum??'?')}–${esc(o.budget.maximum??'?')} ${esc(o.budget.currency||'')} · ${esc(o.budget.unit||'')} (de verificat)</p>`:''}
  <p>${esc((o.description||'Descriere indisponibilă').slice(0,350))}${(o.description||'').length>350?'…':''}</p>
  <div class="projectToolbar">${link?`<a class="smallBtn" href="${safeAttr(link)}" target="_blank" rel="noopener noreferrer">Verifică anunțul ↗</a>`:''}
- ${s?`<button class="smallBtn" data-hunter-draft="${idx}">✍️ Pregătește oferta</button><button class="smallBtn" data-hunter-estimate="${idx}">💰 Estimează</button><button class="smallBtn" data-hunter-state="${idx}">📋 Stare: ${esc(o.state||'Salvat')}</button><button class="smallBtn dangerBtn" data-hunter-del="${idx}">Șterge</button>`:`<button class="smallBtn approve" data-hunter-save="${idx}">+ Salvează oportunitatea</button>`}</div>
+ ${s?`<button class="smallBtn" data-hunter-pipeline="${idx}">📋 Pipeline / următorul pas</button><button class="smallBtn" data-hunter-draft="${idx}">✍️ Pregătește oferta</button><button class="smallBtn" data-hunter-estimate="${idx}">💰 Estimează</button><button class="smallBtn dangerBtn" data-hunter-del="${idx}">Șterge</button>`:`<button class="smallBtn approve" data-hunter-save="${idx}">+ Salvează oportunitatea</button>`}</div>
+ ${s&&o.nextActionAt?`<p class="hint">Următoarea acțiune: ${esc(o.nextActionAt)}${due?' · RESTANTĂ':''}</p>`:''}
+ ${s&&o.notes?`<p class="hint">Notițe: ${esc(o.notes.slice(0,200))}</p>`:''}
  ${s&&o.output?`<p class="hint">Oferta: ${o.state==='approved'?'aprobată pentru trimitere MANUALĂ':'schiță salvată'} — niciun mesaj trimis. <button class="smallBtn" data-hunter-view="${idx}">Vezi / editează</button></p>`:''}
  </article>`;
 }
@@ -28,20 +59,49 @@ function hunterBindings(){
  document.querySelectorAll('[data-hunter-save]').forEach(b=>b.onclick=()=>{let o=hunterLatest[Number(b.dataset.hunterSave)];if(!o)return;
   if(hunterSaved.some(x=>x.url===o.url)){alert('Oportunitatea este deja salvată.');return}
   if(hunterSaved.length>=150){alert('Maximum 150 oportunități salvate. Șterge sau exportă câteva.');return}
-  hunterSaved.push({...o,projectId:currentProjectId,state:'saved',output:'',savedAt:new Date().toISOString()});hunterStore();log('Hunter: oportunitate salvată, fără aplicare.');hunterResults();});
+  hunterSaved.push({...o,projectId:currentProjectId,state:'saved',priority:'normal',nextActionAt:'',notes:'',output:'',savedAt:new Date().toISOString()});hunterStore();log('Hunter: oportunitate salvată, fără aplicare.');hunterResults();});
+ document.querySelectorAll('[data-hunter-pipeline]').forEach(b=>b.onclick=()=>hunterPipelineEdit(Number(b.dataset.hunterPipeline)));
  document.querySelectorAll('[data-hunter-draft]').forEach(b=>b.onclick=()=>hunterDraftForm(Number(b.dataset.hunterDraft)));
  document.querySelectorAll('[data-hunter-estimate]').forEach(b=>b.onclick=()=>hunterEstimateForm(Number(b.dataset.hunterEstimate)));
  document.querySelectorAll('[data-hunter-view]').forEach(b=>b.onclick=()=>hunterEditDraft(Number(b.dataset.hunterView)));
  document.querySelectorAll('[data-hunter-del]').forEach(b=>b.onclick=()=>{let i=Number(b.dataset.hunterDel);if(!confirm('Ștergi oportunitatea salvată?'))return;hunterSaved.splice(i,1);hunterStore();hunterBoard()});
- document.querySelectorAll('[data-hunter-state]').forEach(b=>b.onclick=()=>{let x=hunterSaved[Number(b.dataset.hunterState)];if(!x)return;const states=['saved','drafted','approved','rejected'];x.state=states[(states.indexOf(x.state)+1)%states.length];hunterStore();hunterBoard()});
+
 }
-function hunterBoard(){
+function hunterPipelineEdit(index){
+ const o=hunterSaved[index];if(!o)return hunterBoard();
+ modal('Hunter · Sales Pipeline','URMĂTORUL PAS · FĂRĂ TRIMITERE AUTOMATĂ',`<p class="subtitle"><b>${esc(o.title)}</b> · ${esc(o.company||o.source)}. Actualizează doar acțiuni reale, nu rezultate presupuse.</p>
+ <form id="hunterPipelineForm">
+ <label class="field">Etapa oportunității<select id="hunterPipelineState">${Object.entries(HUNTER_STAGES).map(([key,label])=>`<option value="${key}" ${(o.state||'saved')===key?'selected':''}>${esc(label)}</option>`).join('')}</select></label>
+ <label class="field">Prioritate stabilită de tine<select id="hunterPipelinePriority">${Object.entries(HUNTER_PRIORITIES).map(([key,label])=>`<option value="${key}" ${(o.priority||'normal')===key?'selected':''}>${esc(label)}</option>`).join('')}</select></label>
+ <label class="field">Data următoarei acțiuni<input id="hunterPipelineDate" type="date" value="${safeAttr(o.nextActionAt||'')}"></label>
+ <label class="field">Notițe private (maximum 1000 caractere)<textarea id="hunterPipelineNotes" maxlength="1000" rows="5" placeholder="Ex: verifică bugetul, eligibilitatea și răspunsul clientului">${esc(o.notes||'')}</textarea></label>
+ <button class="action" type="submit">💾 Salvează în pipeline</button></form>
+ <div class="projectToolbar"><button class="smallBtn" id="hunterPipelineBack">← Înapoi la listă</button></div>
+ <p class="note">„Trimis manual” se marchează numai după ce ai trimis tu oferta în afara aplicației. Hunter nu trimite mesaje, nu acceptă contracte și nu câștigă proiecte automat. Datele sunt stocate doar în acest browser.</p>`);
+ $('#hunterPipelineBack').onclick=()=>hunterBoard();
+ $('#hunterPipelineForm').onsubmit=e=>{
+  e.preventDefault();
+  const state=$('#hunterPipelineState').value;
+  const priority=$('#hunterPipelinePriority').value;
+  const nextActionAt=$('#hunterPipelineDate').value;
+  const notes=$('#hunterPipelineNotes').value.trim();
+  if(!Object.hasOwn(HUNTER_STAGES,state)||!Object.hasOwn(HUNTER_PRIORITIES,priority))return alert('Selectează o etapă și o prioritate valide.');
+  if(nextActionAt&&!/^\\d{4}-\\d{2}-\\d{2}$/.test(nextActionAt))return alert('Data următoarei acțiuni nu este validă.');
+  if(notes.length>1000)return alert('Notițele depășesc limita permisă.');
+  if(['sent','followup','won'].includes(state)&&state!==o.state&&!confirm('Confirmi că această etapă reflectă o acțiune REALĂ efectuată manual?'))return;
+  o.state=state;o.priority=priority;o.nextActionAt=nextActionAt;o.notes=notes;o.updatedAt=new Date().toISOString();
+  hunterStore();hunterBoard();
+ };
+}
+function hunterBoard(stage='all'){
+ const totals=hunterPipelineSummary(hunterSaved);
+ const shown=hunterPipelineRows(hunterSaved,stage);
  modal('Hunter AI · Sales Desk','OPORTUNITĂȚI · FĂRĂ TRIMITERE AUTOMATĂ',`<p class="subtitle">Agent City caută zilnic semnale publice de clienți și poate pregăti oferte pentru orice industrie. <b>Lista zilnică funcționează fără chei API.</b> Căutarea avansată cere configurarea serverului. Anunțurile nu sunt garantat freelance și trebuie verificate la sursă. Datele salvate rămân doar în acest browser.</p>
- <div class="hunterStats"><span>📌 ${hunterSaved.length} salvate</span><span>✍️ ${hunterSaved.filter(x=>x.output).length} oferte</span><span>✅ ${hunterSaved.filter(x=>x.state==='approved').length} aprobate manual</span></div>
+ <div class="hunterStats"><span>📌 ${totals.total} salvate</span><span>⏰ ${totals.due} acțiuni restante</span><span>✍️ ${hunterSaved.filter(x=>x.output).length} oferte</span><span>✅ ${totals.ready} pregătite</span><span>📨 ${totals.sent} trimise / urmărite manual</span><span>🏆 ${totals.won} câștigate</span></div>
  <div class="projectToolbar"><button class="smallBtn approve" id="hunterLeadsOpen">🎯 Caută clienți (zilnic)</button><button class="smallBtn" id="hunterSearchOpen">🔎 Alte anunțuri</button><button class="smallBtn" id="hunterManualOpen">+ Adaugă anunț</button><button class="smallBtn" id="hunterExport">↓ Exportă oportunități</button></div>
- <h3 class="sectionTitle">LISTA TA DE OPORTUNITĂȚI</h3><div class="hunterList">${hunterSaved.slice().reverse().map(o=>hunterCard(o,'saved')).join('')||'<p class="emptyState">Nu ai salvat oportunități. Poți căuta în feedurile publice sau poți adăuga manual un anunț.</p>'}</div>
+ <h3 class="sectionTitle">SALES PIPELINE · OPORTUNITĂȚILE TALE</h3><label class="field">Filtrează după etapă <select id="hunterStageFilter"><option value="all">Toate oportunitățile</option><option value="due">⏰ Acțiuni restante</option>${Object.entries(HUNTER_STAGES).map(([key,label])=>`<option value="${key}" ${stage===key?'selected':''}>${esc(label)}</option>`).join('')}</select></label><div class="hunterList">${shown.map(o=>hunterCard(o,'saved')).join('')||'<p class="emptyState">Nicio oportunitate în această etapă. Modifică filtrul sau adaugă un anunț.</p>'}</div>
  <p class="note">Hunter nu trimite oferte, nu deschide conturi și nu acceptă contracte. „Aprobat” înseamnă doar că ai verificat textul pentru trimitere manuală.</p>`);
- $('#hunterLeadsOpen').onclick=hunterLeadsOpen;$('#hunterSearchOpen').onclick=hunterSearchForm;$('#hunterManualOpen').onclick=hunterManualForm;$('#hunterExport').onclick=hunterExport;hunterBindings();
+ $('#hunterLeadsOpen').onclick=hunterLeadsOpen;$('#hunterSearchOpen').onclick=hunterSearchForm;$('#hunterManualOpen').onclick=hunterManualForm;$('#hunterExport').onclick=hunterExport;$('#hunterStageFilter').onchange=e=>hunterBoard(e.target.value);hunterBindings();
  // Cards are rendered newest first; normalize handler indexes using data-index values from hunterCard.
 }
 // Daily leads are public read-only signals produced by GitHub Actions: no token, no outreach.
@@ -138,7 +198,7 @@ function hunterManualForm(){
  $('#hunterBackManual').onclick=hunterBoard;
  $('#hunterManual').onsubmit=e=>{e.preventDefault();const raw=$('#hunterUrl').value.trim();const u=safeUrl(raw);if(!u||!u.startsWith('https://')){alert('Este necesar un link HTTPS.');return}
   if(hunterSaved.some(x=>x.url===u)){alert('Anunțul este deja salvat.');return}if(hunterSaved.length>=150){alert('Lista a atins limita de 150.');return}
-  hunterSaved.push({id:uid(),title:$('#hunterTitle').value.trim(),company:$('#hunterCompany').value.trim(),description:$('#hunterDescription').value.trim(),url:u,source:'Adăugat manual',kind:'unspecified',postedAt:null,score:0,projectId:currentProjectId,state:'saved',savedAt:new Date().toISOString(),output:''});hunterStore();hunterBoard();log('Hunter: oportunitate adăugată manual.');
+  hunterSaved.push({id:uid(),title:$('#hunterTitle').value.trim(),company:$('#hunterCompany').value.trim(),description:$('#hunterDescription').value.trim(),url:u,source:'Adăugat manual',kind:'unspecified',postedAt:null,score:0,projectId:currentProjectId,state:'saved',priority:'normal',nextActionAt:'',notes:'',savedAt:new Date().toISOString(),output:''});hunterStore();hunterBoard();log('Hunter: oportunitate adăugată manual.');
  };
 }
 function hunterDraftForm(index){const item=hunterSaved[index];if(!item)return hunterBoard();
