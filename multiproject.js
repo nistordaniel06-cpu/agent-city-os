@@ -58,7 +58,9 @@ function showCodeReviewer(){
  $('#codeReviewReload').onclick=loadCodeReviewStatus;
  loadCodeReviewStatus();
 }
+let codeReviewRequestId=0;
 async function loadCodeReviewStatus(){
+ const requestId=++codeReviewRequestId;
  const pulls=$('#codeReviewPulls'),runs=$('#codeReviewRuns');
  if(!pulls||!runs)return;
  pulls.innerHTML='<p class="hint">Se caută PR-urile…</p>';
@@ -73,7 +75,7 @@ async function loadCodeReviewStatus(){
   request('/pulls?state=open&per_page=10'),
   request('/actions/workflows/code-review-groq.yml/runs?per_page=5')
  ]);
- if($('#codeReviewPulls')!==pulls||$('#codeReviewRuns')!==runs)return;
+ if(requestId!==codeReviewRequestId||$('#codeReviewPulls')!==pulls||$('#codeReviewRuns')!==runs)return;
  if(prResult.status==='fulfilled'&&Array.isArray(prResult.value)){
   const items=prResult.value.filter(p=>codeReviewItemURL(p.number));
   pulls.innerHTML=items.length?items.map(p=>
