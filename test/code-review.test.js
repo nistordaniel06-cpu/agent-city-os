@@ -16,6 +16,9 @@ test('GitHub Action uses pinned OpenCodeReview and Groq with safe permissions, n
  assert.match(workflow,/pull-requests: write/);
  assert.match(workflow,/OCR_GROQ_API_KEY/);
  assert.match(workflow,/if \[ -z "\$GROQ_OCR_API_KEY" \]/);
+ assert.match(workflow,/echo "enabled=false" >> "\$GITHUB_OUTPUT"/);
+ assert.match(workflow,/steps\.configuration\.outputs\.enabled == 'true'/);
+ assert.match(workflow,/Code review skipped/);
  assert.match(workflow,/uses: nistordaniel06-cpu\/open-code-review@[a-f0-9]{40}/);
  assert.match(workflow,/ocr_version: '1\.13\.0'/);
  assert.match(workflow,/llm_url: 'https:\/\/api\.groq\.com\/openai\/v1\/chat\/completions'/);
