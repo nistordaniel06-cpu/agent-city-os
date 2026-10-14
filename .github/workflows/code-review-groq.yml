@@ -50,7 +50,7 @@ jobs:
           llm_extra_body: '{}'
           github_token: ${{ github.token }}
           review_concurrency: '1'
-          max_tokens_budget: '8000'
+          max_tokens_budget: '32000'
           review_task_timeout: '8'
           llm_timeout: '80'
           language: 'Romanian'
