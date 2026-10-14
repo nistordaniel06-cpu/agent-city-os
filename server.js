@@ -11,12 +11,17 @@ const {createDeveloper}=require('./github-developer');
 const {createHunter}=require('./hunter');
 const {estimate}=require('./estimator');
 const {createAIClient,providerFromEnvironment,extractResponseText}=require('./ai-provider');
+const {createHyAgent,hyagentConfig}=require('./hyagent');
 
 const HOST=process.env.HOST||'127.0.0.1';
 const PORT=Number(process.env.PORT||3000);
 const ACCESS_TOKEN=process.env.AGENT_CITY_ACCESS_TOKEN||'';
 const AI_CONFIG=providerFromEnvironment();
 const aiClient=createAIClient({config:AI_CONFIG});
+const HY_CONFIG=hyagentConfig();
+const hyAgent=createHyAgent({config:HY_CONFIG});
+const MAX_TRANSLATIONS_PER_DAY=Math.max(1,Math.min(100,Number(process.env.MAX_TRANSLATIONS_PER_DAY||15)));
+const translationTimes=[];
 const MAX_RUNS_PER_DAY=Math.max(1,Math.min(100,Number(process.env.MAX_RUNS_PER_DAY||15)));
 let activeRun=false;
 const runTimes=[];
@@ -30,7 +35,7 @@ const VALID_ROLES={
 };
 const developer=createDeveloper({githubToken:process.env.GITHUB_TOKEN||'',githubOwner:process.env.GITHUB_OWNER||'',aiClient});
 const hunter=createHunter({aiClient,freelancerToken:process.env.FLN_OAUTH_TOKEN||''});
-const STATIC={'/':['index.html','text/html; charset=utf-8'],'/index.html':['index.html','text/html; charset=utf-8'],'/multiproject.js':['multiproject.js','application/javascript; charset=utf-8'],'/hunter-ui.js':['hunter-ui.js','application/javascript; charset=utf-8'],'/leads-daily.json':['public/leads-daily.json','application/json; charset=utf-8']};
+const STATIC={'/':['index.html','text/html; charset=utf-8'],'/index.html':['index.html','text/html; charset=utf-8'],'/multiproject.js':['multiproject.js','application/javascript; charset=utf-8'],'/hunter-ui.js':['hunter-ui.js','application/javascript; charset=utf-8'],'/leads-daily.json':['public/leads-daily.json','application/json; charset=utf-8'],'/admin':['public/admin/index.html','text/html; charset=utf-8'],'/admin/':['public/admin/index.html','text/html; charset=utf-8'],'/admin/index.html':['public/admin/index.html','text/html; charset=utf-8'],'/admin/admin.js':['public/admin/admin.js','application/javascript; charset=utf-8']};
 function send(res,status,data,headers={}){res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','X-Frame-Options':'DENY','Referrer-Policy':'no-referrer',...headers});res.end(JSON.stringify(data))}
 function sameToken(provided){if(!provided||!ACCESS_TOKEN)return false;const a=Buffer.from(provided),b=Buffer.from(ACCESS_TOKEN);return a.length===b.length&&crypto.timingSafeEqual(a,b)}
 function validatePayload(d){
@@ -86,7 +91,33 @@ function receiveJSON(req){return new Promise((resolve,reject)=>{
 })}
 const server=http.createServer(async(req,res)=>{
  let pathname;try{pathname=new URL(req.url,'http://localhost').pathname}catch{return send(res,400,{error:'URL invalid.'})}
- if(req.method==='GET'&&pathname==='/api/health')return send(res,200,{product:'agent-city-os',version:'5.0',aiProvider:AI_CONFIG.provider,aiModel:AI_CONFIG.model,aiConfigured:aiClient.enabled()&&!!ACCESS_TOKEN,githubConfigured:developer.enabled()&&!!ACCESS_TOKEN,hunterConfigured:!!ACCESS_TOKEN,hunterDraftConfigured:hunter.enabled()&&!!ACCESS_TOKEN,freelancerConnected:hunter.freelancerConnected()&&!!ACCESS_TOKEN,features:['projects-local','missions','ai-text-drafts','github-draft-pr-with-approval','hunter-public-feeds','freelancer-oauth-read-only','hunter-cost-estimate','hunter-proposals-manual-only','human-review'],dataLocation:'browser-localStorage'});
+ if(req.method==='GET'&&pathname==='/api/health')return send(res,200,{product:'agent-city-os',version:'5.0',aiProvider:AI_CONFIG.provider,aiModel:AI_CONFIG.model,aiConfigured:aiClient.enabled()&&!!ACCESS_TOKEN,githubConfigured:developer.enabled()&&!!ACCESS_TOKEN,hunterConfigured:!!ACCESS_TOKEN,hunterDraftConfigured:hunter.enabled()&&!!ACCESS_TOKEN,hyagentConfigured:hyAgent.configured(),freelancerConnected:hunter.freelancerConnected()&&!!ACCESS_TOKEN,features:['projects-local','missions','ai-text-drafts','github-draft-pr-with-approval','hunter-public-feeds','freelancer-oauth-read-only','hunter-cost-estimate','hunter-proposals-manual-only','human-review'],dataLocation:'browser-localStorage'});
+ if(req.method==='GET'&&pathname==='/api/admin/status'){
+  const auth=req.headers.authorization?.startsWith('Bearer ')?req.headers.authorization.slice(7):'';
+  if(!sameToken(auth))return send(res,401,{error:'Acces admin refuzat. Introdu tokenul AGENT_CITY_ACCESS_TOKEN.'});
+  const now=Date.now();
+  while(runTimes.length&&runTimes[0]<now-86400000)runTimes.shift();
+  while(translationTimes.length&&translationTimes[0]<now-86400000)translationTimes.shift();
+  return send(res,200,{
+   product:'agent-city-os',admin:true,storage:'browser-localStorage',
+   ai:{provider:AI_CONFIG.provider,model:AI_CONFIG.model,configured:aiClient.enabled()},
+   hyagent:{configured:hyAgent.configured(),model:hyAgent.model,requiresRemoteInference:true},
+   hunter:{configured:!!ACCESS_TOKEN,draftsConfigured:hunter.enabled()},
+   codeReviewer:{repository:'nistordaniel06-cpu/agent-city-os',workflow:'code-review-groq.yml',activation:'PR #9 (așteaptă merge și secret GitHub)'},
+   limits:{aiRunsUsed:runTimes.length,maxAiRuns:MAX_RUNS_PER_DAY,translationsUsed:translationTimes.length,maxTranslations:MAX_TRANSLATIONS_PER_DAY,activeRun},
+   note:'Numărătorile serverului sunt aproximative pe Vercel serverless; misiunile/proiectele sunt în browserul curent, nu într-o bază de date.'
+  });
+ }
+ if(req.method==='POST'&&pathname==='/api/hyagent/translate'){
+  const auth=req.headers.authorization?.startsWith('Bearer ')?req.headers.authorization.slice(7):'';
+  if(!sameToken(auth))return send(res,401,{error:'Token de acces invalid (401).'});
+  if(req.headers['content-type']?.split(';')[0].trim()!=='application/json')return send(res,415,{error:'Doar application/json.'});
+  const now=Date.now();while(translationTimes.length&&translationTimes[0]<now-86400000)translationTimes.shift();
+  if(translationTimes.length>=MAX_TRANSLATIONS_PER_DAY)return send(res,429,{error:'Limita zilnică locală de traduceri a fost atinsă.'});
+  let body;try{body=await receiveJSON(req)}catch(e){return send(res,400,{error:e.message})}
+  try{const result=await hyAgent.translate(body);translationTimes.push(now);return send(res,200,result)}
+  catch(e){return send(res,e.status&&e.status>=400&&e.status<600?e.status:502,{error:String(e.message||'Eroare HyAgent').slice(0,260)})}
+ }
  if(req.method==='POST'&&pathname==='/api/hunter/estimate'){
   const auth=req.headers.authorization?.startsWith('Bearer ')?req.headers.authorization.slice(7):'';
   if(!sameToken(auth))return send(res,401,{error:'Token de acces invalid (401).'});
