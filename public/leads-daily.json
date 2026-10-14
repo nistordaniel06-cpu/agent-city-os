@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generatedAt": "2026-10-14T05:17:25.111Z",
+  "generatedAt": "2026-10-14T12:52:41.292Z",
   "results": [
     {
       "id": "reddit:d3602e0fb58a67d6",
@@ -16,6 +16,21 @@
       "postedAt": "2026-10-13T17:20:54.000Z",
       "kind": "request-for-work",
       "score": 64,
+      "verified": false
+    },
+    {
+      "id": "reddit:e5c28046d37e8d0b",
+      "source": "Reddit r/forhire",
+      "title": "[Hiring] Google Ads Specialist / Manager (Remote) | No corporate BS, fair pay, real budgets 🎯",
+      "company": "Autorul anunțului (neverificat)",
+      "url": "https://www.reddit.com/r/forhire/comments/1x5ndr3/hiring_google_ads_specialist_manager_remote_no/",
+      "description": "<!-- SC_OFF --><div class=\"md\"><p>[Hiring] Google Ads Specialist / Manager (Remote) | No corporate BS, fair pay, real budgets 🎯</p> <p>Hey Reddit,</p> <p>Why are we posting here? Because we’re looking for actual pros and data nerds who know their stuff, and we’re tired of the standard job board black hole and 3-page cover letters.</p> <p>We are looking for a Google Ads Manager who doesn’t think \"ROAS\" is a mythical creature a",
+      "tags": [
+        "marketing"
+      ],
+      "postedAt": "2026-10-14T10:09:29.000Z",
+      "kind": "request-for-work",
+      "score": 57,
       "verified": false
     }
   ],
