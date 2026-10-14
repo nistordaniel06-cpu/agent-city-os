@@ -17,7 +17,7 @@ function hunterToday(){
  return date.getFullYear()+'-'+pad(date.getMonth()+1)+'-'+pad(date.getDate());
 }
 function hunterDue(o,today=hunterToday()){
- return typeof o.nextActionAt==='string'&&/^\\d{4}-\\d{2}-\\d{2}$/.test(o.nextActionAt)
+ return typeof o.nextActionAt==='string'&&/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(o.nextActionAt)
   &&o.nextActionAt<=today&&!['won','lost','rejected'].includes(o.state);
 }
 function hunterPipelineRows(rows,stage='all',today=hunterToday()){
@@ -86,7 +86,7 @@ function hunterPipelineEdit(index){
   const nextActionAt=$('#hunterPipelineDate').value;
   const notes=$('#hunterPipelineNotes').value.trim();
   if(!Object.hasOwn(HUNTER_STAGES,state)||!Object.hasOwn(HUNTER_PRIORITIES,priority))return alert('Selectează o etapă și o prioritate valide.');
-  if(nextActionAt&&!/^\\d{4}-\\d{2}-\\d{2}$/.test(nextActionAt))return alert('Data următoarei acțiuni nu este validă.');
+  if(nextActionAt&&!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(nextActionAt))return alert('Data următoarei acțiuni nu este validă.');
   if(notes.length>1000)return alert('Notițele depășesc limita permisă.');
   if(['sent','followup','won'].includes(state)&&state!==o.state&&!confirm('Confirmi că această etapă reflectă o acțiune REALĂ efectuată manual?'))return;
   o.state=state;o.priority=priority;o.nextActionAt=nextActionAt;o.notes=notes;o.updatedAt=new Date().toISOString();
