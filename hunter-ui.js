@@ -40,17 +40,39 @@ function hunterPipelineSummary(rows,today=hunterToday()){
   sent:rows.filter(o=>['sent','followup'].includes(o.state)).length,
   won:rows.filter(o=>o.state==='won').length};
 }
+function hunterPlainText(value){
+ // Legacy reports can contain Reddit HTML comments and escaped HTML markup.
+ // Convert to plain text only; hunterCard still HTML-escapes before rendering.
+ const decode=text=>String(text).replace(/&(?:amp|lt|gt|quot|apos|nbsp|#(?:x[0-9a-f]+|[0-9]+));/gi,entity=>{
+  const key=entity.toLowerCase();
+  if(key==='&amp;')return '&';
+  if(key==='&lt;')return '<';
+  if(key==='&gt;')return '>';
+  if(key==='&quot;')return '"';
+  if(key==='&apos;')return "'";
+  if(key==='&nbsp;')return ' ';
+  if(key.startsWith('&#')){
+   const hex=key.startsWith('&#x'),code=Number.parseInt(key.slice(hex?3:2,-1),hex?16:10);
+   return Number.isInteger(code)&&code>0&&code<=0x10ffff&&!(code>=0xd800&&code<=0xdfff)?String.fromCodePoint(code):' ';
+  }
+  return entity;
+ });
+ const raw=String(value||'').slice(0,2400);
+ return decode(decode(raw)).replace(/<!--[\s\S]*?-->/g,' ').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
+}
+
 function hunterCard(o,mode='live'){
  const s=mode==='saved',title=esc(o.title),company=esc(o.company||'Companie nespecificată'),source=esc(o.source||'Manual'),link=safeUrl(o.url||'');
  const kind=({ 'contract-mention':'Mențiune contract/freelance','employment-mention':'Mențiune angajare',unspecified:'Tip neconfirmat','marketplace-project':'Proiect freelance (platformă)','request-for-work':'Cerere publică [Hiring] (neconfirmată)','lead-signal':'Posibilă nevoie de servicii (neconfirmată)'})[o.kind]||'Tip neconfirmat';
  const freshness=o.postedAt?new Date(o.postedAt).toLocaleDateString('ro-RO'):'Dată necunoscută';
+ const description=hunterPlainText(o.description||'Descriere indisponibilă');
  const idx=mode==='saved'?hunterSaved.findIndex(x=>x.id===o.id):hunterLatest.findIndex(x=>x.id===o.id);
  const stage=HUNTER_STAGES[o.state]||'Salvat';
  const due=s&&hunterDue(o);
  return `<article class="hunterItem"><div class="hunterMeta"><span>${source}</span><span>${esc(kind)}</span><span>${esc(freshness)}</span>${!s?`<span>Potrivire orientativă ${Number(o.score||0)}/100</span>`:`<span>${esc(stage)}</span><span>Prioritate: ${esc(HUNTER_PRIORITIES[o.priority]||'Normală')}</span>`}${due?'<span>⚠️ Acțiune restantă</span>':''}</div>
  <h4>${title}</h4><p class="hunterCompany">${company}</p>
  ${o.budget?`<p class="hunterBudget">Buget declarat: ${esc(o.budget.minimum??'?')}–${esc(o.budget.maximum??'?')} ${esc(o.budget.currency||'')} · ${esc(o.budget.unit||'')} (de verificat)</p>`:''}
- <p>${esc((o.description||'Descriere indisponibilă').slice(0,350))}${(o.description||'').length>350?'…':''}</p>
+ <p>${esc(description.slice(0,350))}${description.length>350?'…':''}</p>
  <div class="projectToolbar">${link?`<a class="smallBtn" href="${safeAttr(link)}" target="_blank" rel="noopener noreferrer">Verifică anunțul ↗</a>`:''}
  ${s?`<button class="smallBtn" data-hunter-pipeline="${idx}">📋 Pipeline / următorul pas</button><button class="smallBtn" data-hunter-draft="${idx}">✍️ Pregătește oferta</button><button class="smallBtn" data-hunter-estimate="${idx}">💰 Estimează</button><button class="smallBtn dangerBtn" data-hunter-del="${idx}">Șterge</button>`:`<button class="smallBtn approve" data-hunter-save="${idx}">+ Salvează oportunitatea</button>`}</div>
  ${s&&o.nextActionAt?`<p class="hint">Următoarea acțiune: ${esc(o.nextActionAt)}${due?' · RESTANTĂ':''}</p>`:''}
@@ -97,6 +119,9 @@ function hunterPipelineEdit(index){
  };
 }
 function hunterBoard(stage='all'){
+ // Event listeners pass a click Event as the first argument, not a pipeline stage.
+ // Unknown values must always show all saved leads rather than an empty list.
+ if(typeof stage!=='string'||!(stage==='all'||stage==='due'||Object.hasOwn(HUNTER_STAGES,stage)))stage='all';
  const totals=hunterPipelineSummary(hunterSaved);
  const shown=hunterPipelineRows(hunterSaved,stage);
  modal('Hunter AI · Sales Desk','OPORTUNITĂȚI · FĂRĂ TRIMITERE AUTOMATĂ',`<p class="subtitle">Agent City caută zilnic semnale publice de clienți și poate pregăti oferte pentru orice industrie. <b>Lista zilnică funcționează fără chei API.</b> Căutarea avansată cere configurarea serverului. Anunțurile nu sunt garantat freelance și trebuie verificate la sursă. Datele salvate rămân doar în acest browser.</p>
