@@ -23,6 +23,7 @@ test('production maps admin HTML and JS while all privileged data stays behind b
  assert.match(page,/id="dashboard"/);
  assert.match(page,/id="missionDialog"/);
  assert.match(page,/id="translationForm"|id="translateForm"/);
+ assert.doesNotMatch(page,/<option>Romanian<\/option>/);
  assert.match(ui,/function logout\(/);
  assert.match(ui,/\/api\/admin\/status/);
  assert.match(ui,/Authorization:'Bearer '\+ownerToken/);
@@ -57,9 +58,9 @@ test('owner-only status never includes credentials, and local admin serves shell
   assert.equal(status.hyagent.configured,false);
   assert.ok(!JSON.stringify(status).includes('minimum-32-characters'));
   assert.ok(!JSON.stringify(status).includes('OPENAI_API_KEY'));
-  const translateDenied=await fetch(base+'/api/hyagent/translate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:'Salut',sourceLanguage:'Romanian',targetLanguage:'English'})});
+  const translateDenied=await fetch(base+'/api/hyagent/translate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:'Salut',sourceLanguage:'English',targetLanguage:'Spanish'})});
   assert.equal(translateDenied.status,401);
-  const translateConfigured=await fetch(base+'/api/hyagent/translate',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer test-only-admin-secret-minimum-32-characters'},body:JSON.stringify({text:'Salut',sourceLanguage:'Romanian',targetLanguage:'English'})});
+  const translateConfigured=await fetch(base+'/api/hyagent/translate',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer test-only-admin-secret-minimum-32-characters'},body:JSON.stringify({text:'Salut',sourceLanguage:'English',targetLanguage:'Spanish'})});
   assert.equal(translateConfigured.status,503);
   const body=await translateConfigured.json();
   assert.match(body.error,/HYAGENT_API_BASE_URL/);

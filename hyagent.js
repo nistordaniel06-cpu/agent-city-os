@@ -3,6 +3,7 @@
 // Agent City must call an externally hosted compatible inference service;
 // never attempt to install a GPU model inside Vercel.
 const DEFAULT_MODEL='tencent/Hy-MT2-1.8B';
+const SUPPORTED_LANGUAGES=['English','French','German','Italian','Spanish'];
 function hyagentConfig(env=process.env){
  const raw=String(env.HYAGENT_API_BASE_URL||'').trim();
  if(!raw)return {enabled:false,model:env.HYAGENT_MODEL||DEFAULT_MODEL,error:'HYAGENT_API_BASE_URL nu este configurată. Rulează Hy-MT2 pe un serviciu de inferență HTTPS cu API compatibil OpenAI.'};
@@ -26,7 +27,7 @@ function verifyTranslation(body){
  if(typeof body.text!=='string'||!body.text.trim()||body.text.length>5000)return 'Textul trebuie să conțină 1–5000 de caractere.';
  for(const k of ['sourceLanguage','targetLanguage']){
   const s=body[k];
-  if(typeof s!=='string'||s.length>48||!(/^[\p{L}][\p{L}\s-]{1,47}$/u).test(s))return 'Limba sursă sau țintă este invalidă.';
+  if(typeof s!=='string'||!SUPPORTED_LANGUAGES.some(language=>language.toLowerCase()===s.toLowerCase()))return 'Limba sursă sau țintă este invalidă.';
  }
  if(body.sourceLanguage.toLowerCase()===body.targetLanguage.toLowerCase())return 'Alege două limbi diferite.';
  if(body.style!==undefined&&!['fidel','business','natural'].includes(body.style))return 'Stilul selectat este invalid.';

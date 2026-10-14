@@ -3,13 +3,19 @@ const test=require('node:test');
 const assert=require('node:assert/strict');
 const {hyagentConfig,verifyTranslation,createHyAgent}=require('../hyagent');
 
-const INPUT={text:'Bună ziua, aș dori o ofertă.',sourceLanguage:'Romanian',targetLanguage:'English',style:'business'};
+const INPUT={text:'Hello, I would like a quote.',sourceLanguage:'English',targetLanguage:'Spanish',style:'business'};
 test('HyAgent is opt-in: never pretends that model is installed on Vercel',()=>{
  const config=hyagentConfig({});
  assert.equal(config.enabled,false);
  assert.match(config.error,/HYAGENT_API_BASE_URL/);
  assert.equal(config.model,'tencent/Hy-MT2-1.8B');
  assert.equal(verifyTranslation(INPUT),null);
+ for(const language of ['English','French','German','Italian','Spanish']){
+  assert.equal(verifyTranslation({...INPUT,sourceLanguage:language,targetLanguage:language==='English'?'Spanish':'English'}),null,language);
+  assert.equal(verifyTranslation({...INPUT,sourceLanguage:language==='English'?'Spanish':'English',targetLanguage:language}),null,language);
+ }
+ assert.notEqual(verifyTranslation({...INPUT,sourceLanguage:'Romanian'}),null);
+ assert.notEqual(verifyTranslation({...INPUT,targetLanguage:'Romanian'}),null);
 });
 test('rejects private, insecure or credential-bearing remote inference endpoints',()=>{
  for(const url of ['http://example.com/v1','http://127.0.0.1:9000/v1','https://localhost/v1','https://192.168.1.10/v1','https://user:password@example.com/v1','https://foo.internal/v1','https://127.0.0.1/v1','file:///tmp/secret','https://example.com/v1?token=secret']){
@@ -43,6 +49,7 @@ test('invalid input and missing inference server never make external requests or
  const client=createHyAgent({config:hyagentConfig({}),fetcher:async()=>{requests++;throw Error('MUST NOT CALL')}});
  await assert.rejects(client.translate(INPUT),err=>err.status===503);
  await assert.rejects(client.translate({...INPUT,text:' '.repeat(6)}),err=>err.status===400);
+ await assert.rejects(client.translate({...INPUT,sourceLanguage:'Romanian'}),err=>err.status===400);
  await assert.rejects(client.translate({...INPUT,sourceLanguage:'../../../../etc/passwd'}),err=>err.status===400);
  assert.equal(requests,0);
 });
