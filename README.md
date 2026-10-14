@@ -181,3 +181,31 @@ New **Hunter daily client signals** action runs automatically once a day (07:17 
 - **Hunter nu este sincronizat automat cu AI-ul**: numai dacă bifezi «Include oportunitățile Hunter salvate» sau activezi opțiunea din detalii, se trimite la următoarea execuție un sumar de maximum 10 anunțuri din acest browser (titlu, descriere scurtă, sursă, etapă, scor). Nu se trimit notițe private, tokenuri sau toate datele brute.
 - Dacă nu atașezi date Hunter, agentului i se comunică explicit că nu le poate vedea. Rezultatele sunt propuneri text, nu analize confirmate ale unor leaduri inaccesibile.
 - Back-upurile JSON schema 2 exportă și reimportă misiunile globale fără a le atribui proiectelor demo.
+
+## Admin panel + HyAgent (Tencent Hy-MT2)
+
+Agent City OS include un **Admin Control Center** separat la [`/admin`](https://agent-city-os-4-men.vercel.app/admin). Este pentru proprietarul agenției, nu pentru vizitatori. Tokenul `AGENT_CITY_ACCESS_TOKEN` este introdus explicit, verificat pe server la `GET /api/admin/status` și păstrat **doar în memoria paginii**; nu se salvează în `localStorage`, fișier sau URL. Fără token, pagina statică de autentificare este vizibilă, însă API-ul administrativ răspunde HTTP 401.
+
+Panoul oferă: status real pentru Groq / OpenAI, configurare HyAgent, limite orientative, listă și actualizare manuală a stării proiectelor, misiuni și aprobare individuală a **livrabilelor text** din browser, agenți locali marcați DEMO, linkuri GitHub/Vercel și export JSON local (fără chei). **Nu face merge, nu trimite oferte, nu acceptă contracte și nu modifică automat repository-uri.**
+
+**Limitare:** proiectele și misiunile sunt stocate în browser (`localStorage`), nu într-o bază de date. Admin-ul vede doar datele din acel browser și de pe acel domeniu. Nu există încă conturi multiple, sincronizare între dispozitive, RBAC sau rapoarte centralizate de consum. Contoarele API din Vercel serverless sunt pe instanța curentă. Pentru producție multi-user trebuie introdus un storage persistent și auth distinct pentru rolurile owner/staff.
+
+### Ce este HyAgent
+
+Repository-ul [`nistordaniel06-cpu/hyagent`](https://github.com/nistordaniel06-cpu/hyagent) conține **Tencent Hy-MT2**, o familie de modele pentru traduceri (1.8B, 7B și 30B-A3B), nu un agent general sau un API gratuit gata de utilizat. Un proiect GitHub conține cod și documentație, **nu înseamnă că modelul este instalat și găzduit**.
+
+Am integrat un adaptor separat `hyagent.js` cu validarea cererilor și un tab Admin → **HyAgent · traducere**. În Vercel nu se descarcă modelul și nu pornim infrastructură GPU costisitoare. Pentru traduceri reale trebuie să rulezi Hy-MT2 pe un serviciu de inferență extern compatibil OpenAI Chat Completions (vLLM/alt gateway configurat corect), care permite apeluri la `/v1/chat/completions`. Atenție la limite de memorie și licența modelului.
+
+### Configurarea HyAgent în Vercel
+
+Adaugă în proiectul `4-men/agent-city-os` → Settings → Environment Variables → Production:
+
+- `HYAGENT_API_BASE_URL` — URL HTTPS public al serviciului tău de inferență, până la `/v1` (de exemplu **schematic**, nu serviciu activ: `https://inference.example/v1`). Nu sunt permise adrese locale / private și credențiale în URL.
+- `HYAGENT_MODEL` — numele modelului expus de server, implicit `tencent/Hy-MT2-1.8B` (poate diferi de numele din API-ul furnizorului).
+- `HYAGENT_API_KEY` — dacă serviciul cere autentificare; configurează valoarea ca **Sensitive**, fără să o trimiți în chat sau să o publici în GitHub.
+
+Salvează și fă Redeploy, apoi intră în `/admin`, autentifică-te cu tokenul existent și testează traducerea. Dacă nu ai încă serverul Hy-MT2, statusul trebuie să arate **Neconfigurat**. Nu există comutare automată către Groq sau OpenAI: erorile modelului Hy sunt afișate fără costuri ascunse pe alți furnizori. `MAX_TRANSLATIONS_PER_DAY` poate limita numărul de traduceri reușite pe instanță (implicit 15), dar nu constituie un control de cost global pe toate instanțele Vercel.
+
+### Code Reviewer este separat
+
+OpenCodeReview + Groq este în [PR #9](https://github.com/nistordaniel06-cpu/agent-city-os/pull/9), care **nu este integrat automat** prin această modificare. Nu există auto-merge; aprobarea unui livrabil în admin nu aprobă un GitHub PR. Workflow-urile de GitHub Actions și Ruleset-urile de protecție necesită configurări specifice.
