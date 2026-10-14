@@ -143,3 +143,12 @@ New **Hunter daily client signals** action runs automatically once a day (07:17 
 - The daily workflow does not run AI generation: this is intentionally low-cost, read-only discovery. Freelancer.com remains optional via OAuth on the private server.
 
 **Business strategy:** use client projects for near-term revenue, and turn repeated verified client pain points into subscription products. No guaranteed clients or income. Vercel Hobby is not licensed for commercial production use: review the hosting plan before taking payments.
+
+## Hunter Sales Pipeline v1 — din lead public în ofertă urmărită
+
+- În **Hunter AI → Sales Pipeline**, salvezi o oportunitate publică sau introduci manual un anunț verificat.
+- Butonul **📋 Pipeline / următorul pas** deschide etapa, prioritatea (ridicată/normală/scăzută), data următoarei acțiuni și notițele tale.
+- Etape: **Salvat → Calificat → Ofertă în lucru → Aprobat pentru trimitere manuală → Trimis manual → De urmărit → Câștigat/Pierdut/Respins**. Sunt actualizate exclusiv de utilizator; aplicația cere confirmare pentru etapele care presupun acțiuni reale.
+- În dashboard poți filtra după etapă, vedea acțiunile restante și prioritiza leadurile după data de urmărit, prioritatea manuală și scorul euristic.
+- **Niciun mesaj sau ofertă nu se expediază automat**. Stările nu confirmă independent un contract. Datele salvate, notițele și termenele sunt în `localStorage` pe dispozitivul curent; exportă JSON pentru backup. Nu există încă sincronizare, notificări push sau inbox conectat.
+- Pentru verificări: `npm test` și `node --check hunter-ui.js`. Nu este necesară o cheie AI pentru pipeline-ul manual.
