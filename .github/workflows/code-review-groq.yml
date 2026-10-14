@@ -1,0 +1,56 @@
+# OpenCodeReview runs on trusted base branch and reviews PR diffs with Groq.
+# Never execute PR code, checkout the untrusted head for shell commands, or merge.
+# The action (from the user's fork) and CLI version are pinned for repeatability.
+name: Code Reviewer (OpenCodeReview + Groq)
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: code-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  code-review:
+    # Only first-party branches; never expose secrets to forks.
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository
+      && github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Require GitHub Actions Groq secret
+        id: configuration
+        env:
+          GROQ_OCR_API_KEY: ${{ secrets.OCR_GROQ_API_KEY }}
+        run: |
+          if [ -z "$GROQ_OCR_API_KEY" ]; then
+            echo "::error::Add OCR_GROQ_API_KEY under Settings > Secrets and variables > Actions in THIS GitHub repository."
+            exit 1
+          fi
+
+      - name: Review PR diff using OpenCodeReview (Groq)
+        # Pin source, not @main. The fork is user-selected.
+        uses: nistordaniel06-cpu/open-code-review@b842659ed903743fe0afeb50eead62ca47de3deb
+        with:
+          ocr_version: '1.13.0'
+          llm_url: 'https://api.groq.com/openai/v1/chat/completions'
+          llm_auth_token: ${{ secrets.OCR_GROQ_API_KEY }}
+          llm_model: 'openai/gpt-oss-20b'
+          llm_protocol: 'openai'
+          llm_use_anthropic: 'false'
+          llm_extra_body: '{}'
+          github_token: ${{ github.token }}
+          review_concurrency: '1'
+          max_tokens_budget: '8000'
+          review_task_timeout: '8'
+          llm_timeout: '80'
+          language: 'Romanian'
+          sticky_summary: 'true'
+          incremental: 'false'
+          upload_artifacts: 'true'
