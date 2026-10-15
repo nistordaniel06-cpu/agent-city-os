@@ -18,7 +18,7 @@ Cheia Groq din **Vercel** este disponibilă aplicației web, dar **nu și GitHub
 1. Deschide [GitHub → agent-city-os → Actions Secrets](https://github.com/nistordaniel06-cpu/agent-city-os/settings/secrets/actions).
 2. Apasă **New repository secret** și creează `OCR_GROQ_API_KEY` cu cheia Groq din contul tău. Folosește o cheie separată dacă dorești să poți revoca accesul doar acestui reviewer.
 3. La următorul PR eligibil, workflow-ul rulează OpenCodeReview și lasă observații pe PR. Fără secret, workflow-ul **eșuează explicit**, fără a expune sau încerca automat cheia OpenAI.
-4. Modelul și bugetul sunt configurate în workflow: un singur review la un moment dat per PR, `max_tokens_budget: 8000`, fără retry automat către un furnizor cu plată. Cotele și disponibilitatea Groq pot limita sau opri temporar analiza.
+4. Modelul și bugetul sunt configurate în workflow: un singur review la un moment dat per PR, `max_tokens_budget: 150000`, fără retry automat către un furnizor cu plată. Cotele și disponibilitatea Groq pot limita sau opri temporar analiza.
 
 ### Aprobarea înainte de merge
 
