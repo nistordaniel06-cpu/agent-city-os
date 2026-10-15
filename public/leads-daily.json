@@ -1,34 +1,18 @@
 {
   "schema": 1,
-  "generatedAt": "2026-10-14T12:52:41.292Z",
+  "generatedAt": "2026-10-15T12:39:22.298Z",
   "results": [
     {
-      "id": "reddit:d3602e0fb58a67d6",
+      "id": "reddit:f6ef77425cf77c2f",
       "source": "Reddit r/forhire",
-      "title": "[Hiring] Playwright, Node.js, Automation Developer",
+      "title": "[Hiring] Reddit Strategist who builds with AI | US AI marketing platform | Remote, EST hours | $20 to $30/hr USD | Full time contract",
       "company": "Autorul anunțului (neverificat)",
-      "url": "https://www.reddit.com/r/forhire/comments/1x52r73/hiring_playwright_nodejs_automation_developer/",
-      "description": "<!-- SC_OFF --><div class=\"md\"><p>Looking for a hands-on Node.js developer to write automated workflow modules for a local user-interface performance testing and simulation suite.</p> <p>The core application logic is already designed; I just need a clean implementation for the browser interaction and logging layers.</p> <p>The full step-by-step documentation, database schemas, and expected validation loops are completely detai",
-      "tags": [
-        "automation",
-        "software"
-      ],
-      "postedAt": "2026-10-13T17:20:54.000Z",
-      "kind": "request-for-work",
-      "score": 64,
-      "verified": false
-    },
-    {
-      "id": "reddit:e5c28046d37e8d0b",
-      "source": "Reddit r/forhire",
-      "title": "[Hiring] Google Ads Specialist / Manager (Remote) | No corporate BS, fair pay, real budgets 🎯",
-      "company": "Autorul anunțului (neverificat)",
-      "url": "https://www.reddit.com/r/forhire/comments/1x5ndr3/hiring_google_ads_specialist_manager_remote_no/",
-      "description": "<!-- SC_OFF --><div class=\"md\"><p>[Hiring] Google Ads Specialist / Manager (Remote) | No corporate BS, fair pay, real budgets 🎯</p> <p>Hey Reddit,</p> <p>Why are we posting here? Because we’re looking for actual pros and data nerds who know their stuff, and we’re tired of the standard job board black hole and 3-page cover letters.</p> <p>We are looking for a Google Ads Manager who doesn’t think \"ROAS\" is a mythical creature a",
+      "url": "https://www.reddit.com/r/forhire/comments/1x6jzk5/hiring_reddit_strategist_who_builds_with_ai_us_ai/",
+      "description": "<!-- SC_OFF --><div class=\"md\"><p>Search Atlas is hiring a Reddit Strategist to own the channel. You'd build the strategy, post, grow the subreddits we own, track sentiment about our name, and send a daily report.</p> <p>This is a hard requirement: you build with AI. Vibe coding, dashboards, and things that run on their own. Send examples of what you've built.</p> <p>Also needed: hands on Reddit work for a brand or product, su",
       "tags": [
         "marketing"
       ],
-      "postedAt": "2026-10-14T10:09:29.000Z",
+      "postedAt": "2026-10-15T12:12:20.000Z",
       "kind": "request-for-work",
       "score": 57,
       "verified": false
