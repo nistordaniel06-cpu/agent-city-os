@@ -1,23 +1,7 @@
 {
   "schema": 1,
-  "generatedAt": "2026-10-17T11:37:02.693Z",
-  "results": [
-    {
-      "id": "reddit:c43b435d57869c18",
-      "source": "Reddit r/forhire",
-      "title": "[HIRING] GTM for an early-stage B2C app | Paid 1-month contract with a potential full-time role and equity",
-      "company": "Autorul anunțului (neverificat)",
-      "url": "https://www.reddit.com/r/forhire/comments/1x80dhy/hiring_gtm_for_an_earlystage_b2c_app_paid_1month/",
-      "description": "<!-- SC_OFF --><div class=\"md\"><p>We're building an AI kitchen assistant that knows what’s in your pantry, suggests what to cook, and builds a grocery list for what’s missing. I'm a solo technical founder and I can't keep doing the marketing every day on top of building.</p> <p>We're looking for someone who can potentially own marketing and distribution. This includes but is not limited to:</p> <ul> <li>Marketing and distribut",
-      "tags": [
-        "software"
-      ],
-      "postedAt": "2026-10-17T03:52:47.000Z",
-      "kind": "request-for-work",
-      "score": 57,
-      "verified": false
-    }
-  ],
+  "generatedAt": "2026-10-18T12:03:20.947Z",
+  "results": [],
   "errors": [],
   "sources": [
     {
