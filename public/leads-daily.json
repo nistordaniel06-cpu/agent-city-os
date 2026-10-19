@@ -1,7 +1,23 @@
 {
   "schema": 1,
-  "generatedAt": "2026-10-18T12:03:20.947Z",
-  "results": [],
+  "generatedAt": "2026-10-19T14:40:14.860Z",
+  "results": [
+    {
+      "id": "reddit:ccc996572fdc7450",
+      "source": "Reddit r/forhire",
+      "title": "[Hiring] On-camera trading content creator, fluent English, €300 to €600/month retainer + per-view bonus, Remote",
+      "company": "Autorul anunțului (neverificat)",
+      "url": "https://www.reddit.com/r/forhire/comments/1x99smf/hiring_oncamera_trading_content_creator_fluent/",
+      "description": "<!-- SC_OFF --><div class=\"md\"><p>We're hiring creators to post short trading videos for Polairyx, an AI macro trading terminal. It reads world news in about 3 seconds and tells traders whether an asset leans bullish or bearish, with the reasons.</p> <p>What you'd do: - Open a new Instagram or TikTok account in the trading niche, dedicated to Polairyx - Post 2 videos a day, 30 to 180 seconds, talking to camera - Normal trading",
+      "tags": [
+        "marketing"
+      ],
+      "postedAt": "2026-10-18T18:00:53.000Z",
+      "kind": "request-for-work",
+      "score": 57,
+      "verified": false
+    }
+  ],
   "errors": [],
   "sources": [
     {
