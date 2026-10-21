@@ -1,18 +1,18 @@
 {
   "schema": 1,
-  "generatedAt": "2026-10-20T12:43:08.581Z",
+  "generatedAt": "2026-10-21T12:55:59.337Z",
   "results": [
     {
-      "id": "reddit:d081499049a89166",
+      "id": "reddit:05a564689fe6da9e",
       "source": "Reddit r/forhire",
-      "title": "[hiring] WILL MANUALLY MASS APPLY TO JOBS ON YOUR BEHALF (0.1$ PER APP)",
+      "title": "[Hiring] Remote Python / AI / ML Engineer – $3,000 USD/Month",
       "company": "Autorul anunțului (neverificat)",
-      "url": "https://www.reddit.com/r/forhire/comments/1xabq1i/hiring_will_manually_mass_apply_to_jobs_on_your/",
-      "description": "<!-- SC_OFF --><div class=\"md\"><p>Hi there! 👋</p> <p>I'm offering a job application service where I apply to jobs on your behalf — saving you time and increasing your chances of landing interviews.</p> <p>🔧 How It Works:</p> <p>I apply to up to 250 jobs per week for you.</p> <p>Each application costs $0.10.</p> <p>I create a Gmail and a Google Spreadsheet to track all applications neatly — so you’re always informed.</p> <p>I",
+      "url": "https://www.reddit.com/r/forhire/comments/1xb9rv2/hiring_remote_python_ai_ml_engineer_3000_usdmonth/",
+      "description": "<!-- SC_OFF --><div class=\"md\"><p>Hi everyone!</p> <p>We are hiring an experienced Python / AI Engineer for a long-term remote opportunity.</p> <p>We are looking for someone with strong technical skills and hands-on experience building AI-powered applications and scalable backend systems.</p> <p><strong>Required Skills:</strong></p> <ul> <li>Python, FastAPI, Django</li> <li>Artificial Intelligence and Machine Learning</li> <li",
       "tags": [
         "software"
       ],
-      "postedAt": "2026-10-19T22:53:07.000Z",
+      "postedAt": "2026-10-21T01:14:29.000Z",
       "kind": "request-for-work",
       "score": 57,
       "verified": false
