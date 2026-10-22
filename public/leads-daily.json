@@ -1,20 +1,21 @@
 {
   "schema": 1,
-  "generatedAt": "2026-10-21T12:55:59.337Z",
+  "generatedAt": "2026-10-22T12:57:51.003Z",
   "results": [
     {
-      "id": "reddit:05a564689fe6da9e",
+      "id": "reddit:aa816849cb3cf5a2",
       "source": "Reddit r/forhire",
-      "title": "[Hiring] Remote Python / AI / ML Engineer – $3,000 USD/Month",
+      "title": "[Hiring] Web Developer Needed to Build a Website — $50 Budget",
       "company": "Autorul anunțului (neverificat)",
-      "url": "https://www.reddit.com/r/forhire/comments/1xb9rv2/hiring_remote_python_ai_ml_engineer_3000_usdmonth/",
-      "description": "<!-- SC_OFF --><div class=\"md\"><p>Hi everyone!</p> <p>We are hiring an experienced Python / AI Engineer for a long-term remote opportunity.</p> <p>We are looking for someone with strong technical skills and hands-on experience building AI-powered applications and scalable backend systems.</p> <p><strong>Required Skills:</strong></p> <ul> <li>Python, FastAPI, Django</li> <li>Artificial Intelligence and Machine Learning</li> <li",
+      "url": "https://www.reddit.com/r/forhire/comments/1xcb5t2/hiring_web_developer_needed_to_build_a_website_50/",
+      "description": "<!-- SC_OFF --><div class=\"md\"><p>I'm looking to hire a freelance web developer to build a website for me.</p> <p>Requirements:</p> <p>- Clean, modern, and professional design</p> <p>- Fully responsive and mobile-friendly</p> <p>- Good UI/UX</p> <p>- Clean, maintainable code</p> <p>- Source code and full ownership upon completion</p> <p>Budget: $50 fixed</p> <p>To apply, please DM me with:</p> <p>- Your portfolio or examples o",
       "tags": [
+        "web",
         "software"
       ],
-      "postedAt": "2026-10-21T01:14:29.000Z",
+      "postedAt": "2026-10-22T06:34:47.000Z",
       "kind": "request-for-work",
-      "score": 57,
+      "score": 64,
       "verified": false
     }
   ],
