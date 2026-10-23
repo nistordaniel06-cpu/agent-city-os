@@ -1,21 +1,36 @@
 {
   "schema": 1,
-  "generatedAt": "2026-10-22T12:57:51.003Z",
+  "generatedAt": "2026-10-23T12:37:22.267Z",
   "results": [
     {
-      "id": "reddit:aa816849cb3cf5a2",
+      "id": "reddit:064b7d3aa47f8813",
       "source": "Reddit r/forhire",
-      "title": "[Hiring] Web Developer Needed to Build a Website — $50 Budget",
+      "title": "[Hiring] Dallas cleaners, handymen, movers: I am building an app that sends you jobs, no lead fees, you keep your quote [$30/hr]",
       "company": "Autorul anunțului (neverificat)",
-      "url": "https://www.reddit.com/r/forhire/comments/1xcb5t2/hiring_web_developer_needed_to_build_a_website_50/",
-      "description": "<!-- SC_OFF --><div class=\"md\"><p>I'm looking to hire a freelance web developer to build a website for me.</p> <p>Requirements:</p> <p>- Clean, modern, and professional design</p> <p>- Fully responsive and mobile-friendly</p> <p>- Good UI/UX</p> <p>- Clean, maintainable code</p> <p>- Source code and full ownership upon completion</p> <p>Budget: $50 fixed</p> <p>To apply, please DM me with:</p> <p>- Your portfolio or examples o",
+      "url": "https://www.reddit.com/r/forhire/comments/1xd2wyf/hiring_dallas_cleaners_handymen_movers_i_am/",
+      "description": "<!-- SC_OFF --><div class=\"md\"><p>I’m building an iPhone app called Skiltap and I’m looking for people around Dallas who do cleaning, handyman work, moving, repairs or pretty much any kind of local service.<br/> One thing I’ve noticed is how much money people end up spending on these service platforms without even knowing if they’ll get any actual work out of it. Some charge you just to contact a customer, and you could spend ",
       "tags": [
-        "web",
         "software"
       ],
-      "postedAt": "2026-10-22T06:34:47.000Z",
+      "postedAt": "2026-10-23T03:15:34.000Z",
       "kind": "request-for-work",
-      "score": 64,
+      "score": 57,
+      "verified": false
+    },
+    {
+      "id": "hn:f2eb7f3c0ed88051",
+      "source": "Hacker News",
+      "title": "[dead]",
+      "company": "Cerere posibilă (neconfirmată)",
+      "url": "https://news.ycombinator.com/item?id=50206308",
+      "description": "What To Expect: We are looking for a Junior Application Security Engineer (all genders) to join the Application Security circle of our IT-Security unit, dedicated to protecting our online shop, our corporate systems and our customers. In this role, you will hack internal systems, design and implement security measures to safeguard our infrastructure, applications, and data. You will work closely with other security engineers, ",
+      "tags": [
+        "commerce",
+        "design"
+      ],
+      "postedAt": "2026-10-23T09:13:34.000Z",
+      "kind": "lead-signal",
+      "score": 42,
       "verified": false
     }
   ],
