@@ -1,22 +1,7 @@
 {
   "schema": 1,
-  "generatedAt": "2026-10-23T12:37:22.267Z",
+  "generatedAt": "2026-10-24T11:59:47.052Z",
   "results": [
-    {
-      "id": "reddit:064b7d3aa47f8813",
-      "source": "Reddit r/forhire",
-      "title": "[Hiring] Dallas cleaners, handymen, movers: I am building an app that sends you jobs, no lead fees, you keep your quote [$30/hr]",
-      "company": "Autorul anunțului (neverificat)",
-      "url": "https://www.reddit.com/r/forhire/comments/1xd2wyf/hiring_dallas_cleaners_handymen_movers_i_am/",
-      "description": "<!-- SC_OFF --><div class=\"md\"><p>I’m building an iPhone app called Skiltap and I’m looking for people around Dallas who do cleaning, handyman work, moving, repairs or pretty much any kind of local service.<br/> One thing I’ve noticed is how much money people end up spending on these service platforms without even knowing if they’ll get any actual work out of it. Some charge you just to contact a customer, and you could spend ",
-      "tags": [
-        "software"
-      ],
-      "postedAt": "2026-10-23T03:15:34.000Z",
-      "kind": "request-for-work",
-      "score": 57,
-      "verified": false
-    },
     {
       "id": "hn:f2eb7f3c0ed88051",
       "source": "Hacker News",
