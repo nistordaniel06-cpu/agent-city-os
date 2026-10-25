@@ -1,25 +1,10 @@
 {
   "schema": 1,
-  "generatedAt": "2026-10-24T11:59:47.052Z",
-  "results": [
-    {
-      "id": "hn:f2eb7f3c0ed88051",
-      "source": "Hacker News",
-      "title": "[dead]",
-      "company": "Cerere posibilă (neconfirmată)",
-      "url": "https://news.ycombinator.com/item?id=50206308",
-      "description": "What To Expect: We are looking for a Junior Application Security Engineer (all genders) to join the Application Security circle of our IT-Security unit, dedicated to protecting our online shop, our corporate systems and our customers. In this role, you will hack internal systems, design and implement security measures to safeguard our infrastructure, applications, and data. You will work closely with other security engineers, ",
-      "tags": [
-        "commerce",
-        "design"
-      ],
-      "postedAt": "2026-10-23T09:13:34.000Z",
-      "kind": "lead-signal",
-      "score": 42,
-      "verified": false
-    }
+  "generatedAt": "2026-10-25T12:34:11.333Z",
+  "results": [],
+  "errors": [
+    "reddit: HTTP 403"
   ],
-  "errors": [],
   "sources": [
     {
       "name": "Reddit r/forhire",
