@@ -15,7 +15,9 @@ test('Vercel deploys the API from its dedicated serverless entrypoint, not serve
 test('Vercel includes static frontend and strictly maps known asset routes',()=>{
   assert.deepEqual(conf.builds[1],{src:'public/**',use:'@vercel/static'});
   const api=conf.routes.find(x=>x.dest==='/api/index.js');
-  const root=conf.routes.find(x=>x.dest==='/public/index.html');
+  const root=conf.routes.find(x=>x.src==='^/$');
+  assert.equal(root.dest,'/public/agency/index.html');
+  assert.ok(conf.routes.some(x=>x.dest==='/public/index.html' && new RegExp(x.src).test('/city')));
   const assets=conf.routes.find(x=>x.dest==='/public/$1');
   assert.ok(api && root && assets);
   assert.match('/api/health',new RegExp(api.src));
@@ -29,3 +31,4 @@ test('Vercel includes static frontend and strictly maps known asset routes',()=>
   assert.doesNotMatch('/.env.example',new RegExp(assets.src));
   assert.doesNotMatch('/server.js',new RegExp(assets.src));
 });
+

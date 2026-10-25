@@ -1,3 +1,38 @@
+# Agent City OS — PR & Marketing Agency, prima etapă
+
+Noua interfață este la `/` și `/agency`, cu 4MEN ca prim dosar de client. Orașul original rămâne la `/city`, iar administrarea la `/admin`.
+
+## Ce funcționează în această etapă
+
+- Dosare de clienți, brief și ton; campanii separate pe client, calendar editorial ordonat după dată și filtre de stare.
+- Livrabile text editabile, salvare locală, revizuire și aprobare. Editarea anulează aprobarea; confirmarea publicării este exclusiv manuală.
+- Creative Studio: materiale JPEG/PNG/WebP/MP4/WebM păstrate în IndexedDB; previzualizare, selectare și ștergere.
+- Compoziție locală dintr-o fotografie cu titlu, brand, CTA, trei stiluri și formate postare/story. Export PNG și clip animat de 6 secunde fără sunet, dacă browserul oferă MediaRecorder și canvas.captureStream. Aceste exporturi NU sunt imagini/video generate de AI. Video original poate fi previzualizat, nu montat automat.
+- Concepte, scenarii Reel, texte și propuneri PR prin furnizor selectat explicit: OpenAI, Groq, DeepSeek, Gemini și Meta. Endpointurile sunt protejate de tokenul existent; nu sunt trimise materialele media. Nu există fallback sau publicare automată.
+- Backup JSON validat pentru clienți/campanii, fără fișierele media. Spațiul nou nu modifică datele vechi ale orașului sau CRM-ului.
+
+## Configurare AI
+
+Păstrează `AGENT_CITY_ACCESS_TOKEN` pe server. În Centru IA introduci numai acest token, temporar în memoria paginii; niciodată cheile furnizorilor.
+
+OpenAI/Groq păstrează configurarea existentă. Pentru fiecare furnizor nou configurează pe server atât cheia, cât și un model de text disponibil în cont: `DEEPSEEK_API_KEY` + `DEEPSEEK_MODEL`, `GEMINI_API_KEY` + `GEMINI_MODEL`, `META_API_KEY` + `META_MODEL`. Nu se presupune acces la un anumit model. `AI_PROVIDER` poate selecta și aceste trei opțiuni pentru vechile misiuni. Studio folosește selecția explicită per cerere.
+
+API oficial: [DeepSeek](https://api-docs.deepseek.com/), [Gemini compatibility](https://ai.google.dev/gemini-api/docs/openai), [Meta](https://dev.meta.ai/docs/api-reference). Adaptoarele noi folosesc Chat Completions și limitează implementarea la text. Antigravity este prezentat ca instrument de dezvoltare, nu ca model conectat.
+
+„Configurat” arată prezența cheii și a modelului; nu este o verificare de autentificare. Primul apel real poate eșua din cauza accesului, modelului sau cotei. API-ul are limită de 6 încercări/oră/instanță și concurență 1, fără plafon financiar distribuit. Setează bugete și la furnizor.
+
+## Limite și următoarele livrări
+
+Aceasta este prima etapă utilizabilă local, NU un sistem multiutilizator. Clienții și campaniile sunt în localStorage necriptat pe dispozitiv, materialele în IndexedDB. Nu introduce date sensibile pe dispozitive partajate. Nu există conturi individuale, sincronizare, notificări, analiză AI a fișierelor, generare AI de imagini/video sau publicare socială. Închiderea paginii oprește exportul local în curs. CRM-ul de vânzări existent își păstrează pachetele web; noile pachete de agenție nu sunt încă implementate.
+
+Ordinea următoare: identități și stocare comună cu permisiuni pe client; istoric de versiuni și colaborare; servicii de generare/editare multimedia cu joburi persistente; pachete recurente și rapoarte; integrări sociale cu aprobare explicită. Datele clienților nu vor fi salvate în repository-ul public.
+
+## Verificare
+
+`npm test` verifică regresiile existente, noii adaptori (răspunsuri simulate), validarea backupului, izolarea logică a clienților, stările de aprobare și autentificarea endpointurilor. `scripts/agency-browser.cjs` verifică fluxul prin browser, exporturile și lățimile 320/390/430/1024; necesită Playwright și Chromium. Workflow-ul include un job separat pentru acesta și artefacte de verificare. Nu sunt necesare chei AI pentru aceste teste.
+
+---
+
 # AGENT CITY OS v5 — Universal AI Agency HQ
 
 **Un singur oraș interactiv pentru multe proiecte independente**, de la jocuri la e-commerce, aplicații, automatizări și proiecte freelance. Proiect separat, fără schimbări în Barbercraft, SalonOS sau alte repo-uri.
@@ -256,3 +291,4 @@ OpenCodeReview + Groq este în [PR #9](https://github.com/nistordaniel06-cpu/age
 ### Limite și următorul upgrade
 
 CRM-ul este pentru validarea primelor vânzări, cu maximum 150 de leaduri per browser. Pentru producție cu mai mulți colaboratori, următoarea etapă este Supabase/DB gestionată, identități owner/staff, jurnal de audit și limite de consum distribuite. Până atunci, folosește exportul criptat și nu stoca numere de card, copii de documente sau date sensibile inutile.
+

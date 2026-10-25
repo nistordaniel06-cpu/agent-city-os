@@ -14,6 +14,8 @@ const {createAIClient,providerFromEnvironment,extractResponseText}=require('./ai
 const {createHyAgent,hyagentConfig}=require('./hyagent');
 const {PACKAGES,EXTRAS,validateDraft}=require('./agency-sales');
 
+const {catalog,createCreative}=require('./creative-agency');
+const creative=createCreative();
 const HOST=process.env.HOST||'127.0.0.1';
 const PORT=Number(process.env.PORT||3000);
 const ACCESS_TOKEN=process.env.AGENT_CITY_ACCESS_TOKEN||'';
@@ -39,7 +41,8 @@ const VALID_ROLES={
 };
 const developer=createDeveloper({githubToken:process.env.GITHUB_TOKEN||'',githubOwner:process.env.GITHUB_OWNER||'',aiClient});
 const hunter=createHunter({aiClient,freelancerToken:process.env.FLN_OAUTH_TOKEN||''});
-const STATIC={'/':['index.html','text/html; charset=utf-8'],'/index.html':['index.html','text/html; charset=utf-8'],'/multiproject.js':['multiproject.js','application/javascript; charset=utf-8'],'/hunter-ui.js':['hunter-ui.js','application/javascript; charset=utf-8'],'/leads-daily.json':['public/leads-daily.json','application/json; charset=utf-8'],'/admin':['public/admin/index.html','text/html; charset=utf-8'],'/admin/':['public/admin/index.html','text/html; charset=utf-8'],'/admin/index.html':['public/admin/index.html','text/html; charset=utf-8'],'/admin/admin.js':['public/admin/admin.js','application/javascript; charset=utf-8'],'/admin/sales.js':['public/admin/sales.js','application/javascript; charset=utf-8']};
+const STATIC={'/':['public/agency/index.html','text/html; charset=utf-8'],'/index.html':['index.html','text/html; charset=utf-8'],'/multiproject.js':['multiproject.js','application/javascript; charset=utf-8'],'/hunter-ui.js':['hunter-ui.js','application/javascript; charset=utf-8'],'/leads-daily.json':['public/leads-daily.json','application/json; charset=utf-8'],'/admin':['public/admin/index.html','text/html; charset=utf-8'],'/admin/':['public/admin/index.html','text/html; charset=utf-8'],'/admin/index.html':['public/admin/index.html','text/html; charset=utf-8'],'/admin/admin.js':['public/admin/admin.js','application/javascript; charset=utf-8'],'/admin/sales.js':['public/admin/sales.js','application/javascript; charset=utf-8']};
+Object.assign(STATIC,{'/city':['index.html','text/html; charset=utf-8'],'/agency':['public/agency/index.html','text/html; charset=utf-8'],'/agency/app.js':['public/agency/app.js','application/javascript; charset=utf-8'],'/agency/model.js':['public/agency/model.js','application/javascript; charset=utf-8'],'/agency/style.css':['public/agency/style.css','text/css; charset=utf-8']});
 function send(res,status,data,headers={}){res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','X-Frame-Options':'DENY','Referrer-Policy':'no-referrer',...headers});res.end(JSON.stringify(data))}
 function sameToken(provided){if(!provided||!ACCESS_TOKEN)return false;const a=Buffer.from(provided),b=Buffer.from(ACCESS_TOKEN);return a.length===b.length&&crypto.timingSafeEqual(a,b)}
 function validatePayload(d){
@@ -95,6 +98,17 @@ function receiveJSON(req,maxBytes=9000){return new Promise((resolve,reject)=>{
 })}
 const server=http.createServer(async(req,res)=>{
  let pathname;try{pathname=new URL(req.url,'http://localhost').pathname}catch{return send(res,400,{error:'URL invalid.'})}
+ if(pathname.startsWith('/api/agency/')){
+  const auth=req.headers.authorization?.startsWith('Bearer ')?req.headers.authorization.slice(7):'';
+  if(!sameToken(auth))return send(res,401,{error:'Introdu tokenul de acces al agenției.'});
+  if(req.method==='GET'&&pathname==='/api/agency/providers')return send(res,200,{providers:catalog(),storage:'local-device',limit:'6 generări/oră/instanță; nu este un plafon financiar global'});
+  if(req.method==='POST'&&pathname==='/api/agency/creative'){
+   if(req.headers['content-type']?.split(';')[0].trim()!=='application/json')return send(res,415,{error:'Doar application/json.'});
+   try{return send(res,200,await creative.generate(await receiveJSON(req,24000)));}
+   catch(e){return send(res,e.status||502,{error:e.name==='AbortError'?'Generarea a depășit timpul maxim.':e.message});}
+  }
+  return send(res,404,{error:'Rută indisponibilă.'});
+ }
  if(req.method==='GET'&&pathname==='/api/health')return send(res,200,{product:'agent-city-os',version:'5.0',aiProvider:AI_CONFIG.provider,aiModel:AI_CONFIG.model,aiConfigured:aiClient.enabled()&&!!ACCESS_TOKEN,githubConfigured:developer.enabled()&&!!ACCESS_TOKEN,hunterConfigured:!!ACCESS_TOKEN,hunterDraftConfigured:hunter.enabled()&&!!ACCESS_TOKEN,hyagentConfigured:hyAgent.configured(),freelancerConnected:hunter.freelancerConnected()&&!!ACCESS_TOKEN,features:['projects-local','missions','ai-text-drafts','github-draft-pr-with-approval','hunter-public-feeds','freelancer-oauth-read-only','hunter-cost-estimate','hunter-proposals-manual-only','human-review','agency-sales-owner-drafts'],dataLocation:'browser-localStorage'});
  if(req.method==='GET'&&pathname==='/api/admin/status'){
   const auth=req.headers.authorization?.startsWith('Bearer ')?req.headers.authorization.slice(7):'';
@@ -204,3 +218,4 @@ const server=http.createServer(async(req,res)=>{
 });
 if(require.main===module){server.listen(PORT,HOST,()=>{console.log(`Agent City OS: http://${HOST}:${PORT}`);console.log(aiClient.enabled()&&ACCESS_TOKEN?'AI '+AI_CONFIG.provider+' configurat: rulare explicită cu aprobare.':'Mod local: configurează furnizorul AI și tokenul de acces pentru rulare.');console.log('Nu publica serverul pe internet fără autentificare și protecții suplimentare.');})}
 module.exports={server,validatePayload,extractOutput};
+
