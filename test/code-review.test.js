@@ -19,6 +19,9 @@ test('GitHub Action uses pinned OpenCodeReview and Groq with safe permissions, n
  assert.match(workflow,/echo "configured=false" >> "\$GITHUB_OUTPUT"/);
  assert.match(workflow,/if: steps\.configuration\.outputs\.configured == 'true'/);
  assert.match(workflow,/uses: nistordaniel06-cpu\/open-code-review@[a-f0-9]{40}/);
+ const installScriptApproval=workflow.indexOf('npm config set allow-scripts=@alibaba-group/open-code-review --location=user');
+ const actionInstall=workflow.indexOf('uses: nistordaniel06-cpu/open-code-review@');
+ assert.ok(installScriptApproval>=0&&installScriptApproval<actionInstall,'Approve the CLI install script before the action installs it');
  assert.match(workflow,/ocr_version: '1\.13\.0'/);
  assert.match(workflow,/llm_url: 'https:\/\/api\.groq\.com\/openai\/v1\/chat\/completions'/);
  assert.match(workflow,/llm_model: 'openai\/gpt-oss-20b'/);

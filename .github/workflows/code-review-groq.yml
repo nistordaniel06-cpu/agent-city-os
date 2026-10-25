@@ -36,6 +36,10 @@ jobs:
             echo "configured=true" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Allow OpenCodeReview install script
+        if: steps.configuration.outputs.configured == 'true'
+        run: npm config set allow-scripts=@alibaba-group/open-code-review --location=user
+
       - name: Review PR diff using OpenCodeReview (Groq)
         if: steps.configuration.outputs.configured == 'true'
         # Pin source, not @main. The fork is user-selected.
