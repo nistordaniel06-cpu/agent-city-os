@@ -1,7 +1,23 @@
 {
   "schema": 1,
-  "generatedAt": "2026-10-28T14:00:40.112Z",
-  "results": [],
+  "generatedAt": "2026-10-29T14:17:24.537Z",
+  "results": [
+    {
+      "id": "reddit:7c9f1dffccf248ce",
+      "source": "Reddit r/forhire",
+      "title": "[Hiring] Florida - React/Node dev to fix a bug in my side project, $1,000 flat",
+      "company": "Autorul anunțului (neverificat)",
+      "url": "https://www.reddit.com/r/forhire/comments/1xi4keq/hiring_florida_reactnode_dev_to_fix_a_bug_in_my/",
+      "description": "<!-- SC_OFF --><div class=\"md\"><p>Hey all. I've got a small personal project (React front end, Node API, Postgres on Railway) that's mostly working, but there's one bug I've been fighting for a couple weeks and I'm done banging my head on it. Not a build-from-scratch thing, I just need someone who knows what they're doing to come in and sort it out.</p> <p>The bug: when a user logs out and logs back in, the dashboard shows the",
+      "tags": [
+        "software"
+      ],
+      "postedAt": "2026-10-28T23:50:04.000Z",
+      "kind": "request-for-work",
+      "score": 57,
+      "verified": false
+    }
+  ],
   "errors": [],
   "sources": [
     {
