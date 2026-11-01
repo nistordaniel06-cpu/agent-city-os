@@ -1,7 +1,23 @@
 {
   "schema": 1,
-  "generatedAt": "2026-10-31T13:38:35.631Z",
-  "results": [],
+  "generatedAt": "2026-11-01T14:15:45.764Z",
+  "results": [
+    {
+      "id": "reddit:63343e0b6ce4645d",
+      "source": "Reddit r/forhire",
+      "title": "[HIRING] Bot creator for E-commerce platform (Lazada)",
+      "company": "Autorul anunțului (neverificat)",
+      "url": "https://www.reddit.com/r/forhire/comments/1xl1h1x/hiring_bot_creator_for_ecommerce_platform_lazada/",
+      "description": "<!-- SC_OFF --><div class=\"md\"><p>Hi there! I’m looking for someone to help me create a bot for an e commerce platform to automate purchases. Please send me a DM if you have experience with developing such e-commerce bots</p> <p>Budget : $50-90 USD</p> <p>I require other programmes to be developed as well which is open for discussion.</p> </div><!-- SC_ON --> submitted by <a href=\"https://www.reddit.com/user/Gold_Rush5129\"> /u",
+      "tags": [
+        "commerce"
+      ],
+      "postedAt": "2026-11-01T12:09:05.000Z",
+      "kind": "request-for-work",
+      "score": 57,
+      "verified": false
+    }
+  ],
   "errors": [],
   "sources": [
     {
