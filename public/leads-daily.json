@@ -1,18 +1,33 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-01T14:15:45.764Z",
+  "generatedAt": "2026-11-02T17:03:53.625Z",
   "results": [
     {
-      "id": "reddit:63343e0b6ce4645d",
+      "id": "reddit:b1c74854fb720b65",
       "source": "Reddit r/forhire",
-      "title": "[HIRING] Bot creator for E-commerce platform (Lazada)",
+      "title": "[HIRING] Video Editor to Record and Create a 20–40 Second Windows Software Showcase",
       "company": "Autorul anunțului (neverificat)",
-      "url": "https://www.reddit.com/r/forhire/comments/1xl1h1x/hiring_bot_creator_for_ecommerce_platform_lazada/",
-      "description": "<!-- SC_OFF --><div class=\"md\"><p>Hi there! I’m looking for someone to help me create a bot for an e commerce platform to automate purchases. Please send me a DM if you have experience with developing such e-commerce bots</p> <p>Budget : $50-90 USD</p> <p>I require other programmes to be developed as well which is open for discussion.</p> </div><!-- SC_ON --> submitted by <a href=\"https://www.reddit.com/user/Gold_Rush5129\"> /u",
+      "url": "https://www.reddit.com/r/forhire/comments/1xm0u1c/hiring_video_editor_to_record_and_create_a_2040/",
+      "description": "<!-- SC_OFF --><div class=\"md\"><p>I'm looking for someone to create a professional 20–40 second showcase video for my Windows desktop application.</p> <p>The goal is to showcase the software's main features in a clean, modern, and visually appealing way, similar to Apple-style product videos.</p> <p><strong>What I'm looking for:</strong></p> <ul> <li>Record the software in action using screen capture.</li> <li>Showcase its mai",
       "tags": [
-        "commerce"
+        "software"
       ],
-      "postedAt": "2026-11-01T12:09:05.000Z",
+      "postedAt": "2026-11-02T15:51:29.000Z",
+      "kind": "request-for-work",
+      "score": 57,
+      "verified": false
+    },
+    {
+      "id": "reddit:8ae9fbca2c51b96e",
+      "source": "Reddit r/forhire",
+      "title": "[Hiring] Graphic designer (branding and packaging design) intern",
+      "company": "Autorul anunțului (neverificat)",
+      "url": "https://www.reddit.com/r/forhire/comments/1xlzvlc/hiring_graphic_designer_branding_and_packaging/",
+      "description": "<!-- SC_OFF --><div class=\"md\"><p>We're Hiring Graphic Designer (branding and packaging design) Interns at Kwezika!</p> <p>We're looking for creative individuals based in India who are passionate about brand strategy, visual identity, and packaging design.</p> <p>We're particularly interested in individuals who have strong design potential, a good eye for detail, and a genuine understanding of how strategy translates into visu",
+      "tags": [
+        "design"
+      ],
+      "postedAt": "2026-11-02T15:15:27.000Z",
       "kind": "request-for-work",
       "score": 57,
       "verified": false
