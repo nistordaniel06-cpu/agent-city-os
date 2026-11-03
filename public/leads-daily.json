@@ -1,7 +1,37 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-02T17:03:53.625Z",
+  "generatedAt": "2026-11-03T15:06:07.636Z",
   "results": [
+    {
+      "id": "reddit:38dc742d30651214",
+      "source": "Reddit r/forhire",
+      "title": "[Hiring] Social Media & Reddit Manager",
+      "company": "Autorul anunțului (neverificat)",
+      "url": "https://www.reddit.com/r/forhire/comments/1xmu1sv/hiring_social_media_reddit_manager/",
+      "description": "<!-- SC_OFF --><div class=\"md\"><p>We're looking for a creative, proactive, and detail-oriented person to manage our social media presence, with a strong focus on Reddit.</p> <p>Main Responsibilities:</p> <p>- Manage and grow social media accounts.</p> <p>- Create engaging posts and captions.</p> <p>- Manage and maintain a Reddit account, including posting, commenting, and interacting with communities.</p> <p>- Identify relevan",
+      "tags": [
+        "marketing"
+      ],
+      "postedAt": "2026-11-03T14:15:22.000Z",
+      "kind": "request-for-work",
+      "score": 57,
+      "verified": false
+    },
+    {
+      "id": "reddit:2ce08c7aceb71b34",
+      "source": "Reddit r/forhire",
+      "title": "[HIRING] Gameram is looking for a Content Creator!",
+      "company": "Autorul anunțului (neverificat)",
+      "url": "https://www.reddit.com/r/forhire/comments/1xmpnp7/hiring_gameram_is_looking_for_a_content_creator/",
+      "description": "<!-- SC_OFF --><div class=\"md\"><p><strong>Location:</strong> Remote (USA)</p> <p><strong>Type:</strong> Freelance / Part-time (20 hours a week)</p> <p><strong>Rate:</strong> $1,500/month</p> <h1>About Gameram</h1> <p>Gameram is a mobile app designed for gamers. We're building a strong social presence across X, Instagram, TikTok, Facebook, and Gameram and we're looking for a content creator who’ll be the face of Gameram and cre",
+      "tags": [
+        "marketing"
+      ],
+      "postedAt": "2026-11-03T10:39:08.000Z",
+      "kind": "request-for-work",
+      "score": 57,
+      "verified": false
+    },
     {
       "id": "reddit:b1c74854fb720b65",
       "source": "Reddit r/forhire",
