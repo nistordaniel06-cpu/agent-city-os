@@ -1,20 +1,22 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-04T15:25:14.664Z",
+  "generatedAt": "2026-11-05T15:27:33.068Z",
   "results": [
     {
-      "id": "reddit:fd6cf31b05aa7b3c",
+      "id": "reddit:7db5a60a15945c40",
       "source": "Reddit r/forhire",
-      "title": "[Hiring] Video editor for construction company short-form content (Reels/TikTok/X), $25–40 per video, Remote",
+      "title": "[HIRING] UI/UX Designer (or Designer + Developer) to redesign a music streaming app + website, $700 design budget",
       "company": "Autorul anunțului (neverificat)",
-      "url": "https://www.reddit.com/r/forhire/comments/1xn2svp/hiring_video_editor_for_construction_company/",
-      "description": "<!-- SC_OFF --><div class=\"md\"><p>We're iFixit General Contractor, a family-owned remodeling and home repair company in Langhorne, PA. We film a lot on the job: before-and-afters, carpentry close-ups, and quick trade tips that explain the \"why\" behind a technique. Our best tip video got 13K+ views, and we want more like it, consistently.</p> <p><strong>Pay:</strong> $25–40 per finished video, depending on length and experience",
+      "url": "https://www.reddit.com/r/forhire/comments/1xogb6x/hiring_uiux_designer_or_designer_developer_to/",
+      "description": "<!-- SC_OFF --><div class=\"md\"><p>Hi everyone,<br/> I run SoundPlus ( Graphikrafts music ), a free music streaming app for Android with a landing page and a web player. The product works, but the design doesn't match what it can be, so I'm looking for someone to give it a modern, polished identity.</p> <p>Current landing page: <a href=\"https://music.graphikrafts.com/\">https://music.graphikrafts.com/</a></p> <p>What I need (des",
       "tags": [
-        "marketing"
+        "web",
+        "software",
+        "design"
       ],
-      "postedAt": "2026-11-03T19:37:07.000Z",
+      "postedAt": "2026-11-05T11:29:23.000Z",
       "kind": "request-for-work",
-      "score": 57,
+      "score": 71,
       "verified": false
     }
   ],
