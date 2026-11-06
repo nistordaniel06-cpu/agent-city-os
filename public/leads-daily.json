@@ -1,22 +1,20 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-05T15:27:33.068Z",
+  "generatedAt": "2026-11-06T15:02:01.553Z",
   "results": [
     {
-      "id": "reddit:7db5a60a15945c40",
+      "id": "reddit:3b52caf264c9399b",
       "source": "Reddit r/forhire",
-      "title": "[HIRING] UI/UX Designer (or Designer + Developer) to redesign a music streaming app + website, $700 design budget",
+      "title": "[HIRING] i vibecoded a website on chatgpt, now I need someone to fixup the code for me",
       "company": "Autorul anunțului (neverificat)",
-      "url": "https://www.reddit.com/r/forhire/comments/1xogb6x/hiring_uiux_designer_or_designer_developer_to/",
-      "description": "<!-- SC_OFF --><div class=\"md\"><p>Hi everyone,<br/> I run SoundPlus ( Graphikrafts music ), a free music streaming app for Android with a landing page and a web player. The product works, but the design doesn't match what it can be, so I'm looking for someone to give it a modern, polished identity.</p> <p>Current landing page: <a href=\"https://music.graphikrafts.com/\">https://music.graphikrafts.com/</a></p> <p>What I need (des",
+      "url": "https://www.reddit.com/r/forhire/comments/1xp9pdj/hiring_i_vibecoded_a_website_on_chatgpt_now_i/",
+      "description": "<!-- SC_OFF --><div class=\"md\"><p>Hello, don’t judge I just needed to understand the looks of it. now that I like more or less the final result, I would like someone making it smoother in transiction, and just generallg less laggy and clean.</p> <p>I am not sure how much to pay for something like this, so name your price. I am not looking to invest hundreds into it. 15$/h.</p> </div><!-- SC_ON --> submitted by <a href=\"https:/",
       "tags": [
-        "web",
-        "software",
-        "design"
+        "web"
       ],
-      "postedAt": "2026-11-05T11:29:23.000Z",
+      "postedAt": "2026-11-06T10:38:30.000Z",
       "kind": "request-for-work",
-      "score": 71,
+      "score": 57,
       "verified": false
     }
   ],
