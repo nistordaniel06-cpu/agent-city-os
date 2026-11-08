@@ -1,24 +1,10 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-07T14:00:27.327Z",
-  "results": [
-    {
-      "id": "reddit:772f0db6a3f8cde6",
-      "source": "Reddit r/forhire",
-      "title": "[HIRING] Building a small creative design studio. Looking for a B2B Sales Partner, Motion Designer & Brand Designer / Illustrator",
-      "company": "Autorul anunțului (neverificat)",
-      "url": "https://www.reddit.com/r/forhire/comments/1xq6exo/hiring_building_a_small_creative_design_studio/",
-      "description": "<!-- SC_OFF --><div class=\"md\"><p>Hey everyone!</p> <p>I'm a graphic and UX/UI designer with a background in digital marketing, and I've recently started thinking about building something of my own.</p> <p>The idea is to create a small, independent creative studio where a few designers with complementary skills can collaborate, take on client projects, and hopefully grow something meaningful together.</p> <p>I'm planning to ha",
-      "tags": [
-        "design"
-      ],
-      "postedAt": "2026-11-07T13:30:17.000Z",
-      "kind": "request-for-work",
-      "score": 57,
-      "verified": false
-    }
+  "generatedAt": "2026-11-08T14:17:30.807Z",
+  "results": [],
+  "errors": [
+    "reddit: HTTP 403"
   ],
-  "errors": [],
   "sources": [
     {
       "name": "Reddit r/forhire",
