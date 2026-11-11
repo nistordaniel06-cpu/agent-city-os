@@ -1,33 +1,18 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-10T15:35:18.130Z",
+  "generatedAt": "2026-11-11T15:10:19.071Z",
   "results": [
     {
-      "id": "reddit:28765be90faa10d8",
+      "id": "reddit:88cfc13d08da8962",
       "source": "Reddit r/forhire",
-      "title": "[Hiring] 3 Content Creators – $250/month + Performance Bonuses!",
+      "title": "[Hiring] Software Engineer for VA Work | $30/hr | Remote",
       "company": "Autorul anunțului (neverificat)",
-      "url": "https://www.reddit.com/r/forhire/comments/1xsp80s/hiring_3_content_creators_250month_performance/",
-      "description": "<!-- SC_OFF --><div class=\"md\"><p>We're looking for 3 people to create short-form content for a mobile app.</p> <p>You'll manage Instagram, TikTok, and YouTube accounts and post the same short videos across all three platforms (Reels, TikToks &amp; Shorts).</p> <p>The work is pretty simple and doesn't require any special skills or professional editing experience! We'll provide promotional clips and a simple content guide. You ",
+      "url": "https://www.reddit.com/r/forhire/comments/1xtj0f7/hiring_software_engineer_for_va_work_30hr_remote/",
+      "description": "<!-- SC_OFF --><div class=\"md\"><p>I'm looking for someone with a software engineering background who wants to make some extra money doing VA work.</p> <p>The pay is $30/hr and it's fully remote.</p> <p>Basically, I need someone to help me with my LinkedIn, emails, and scheduling calls. Nothing too complicated, mostly checking messages, managing connection requests, engaging with people on LinkedIn, and arranging meetings.</p> ",
       "tags": [
-        "marketing"
+        "software"
       ],
-      "postedAt": "2026-11-10T15:06:18.000Z",
-      "kind": "request-for-work",
-      "score": 57,
-      "verified": false
-    },
-    {
-      "id": "reddit:a9bd5bce2d97afec",
-      "source": "Reddit r/forhire",
-      "title": "[HIRING] $200USD/month, remote Content Board Designer for health + biology YT Channel",
-      "company": "Autorul anunțului (neverificat)",
-      "url": "https://www.reddit.com/r/forhire/comments/1xsafzp/hiring_200usdmonth_remote_content_board_designer/",
-      "description": "<!-- SC_OFF --><div class=\"md\"><p>$200USD/month, remote) Content Board Designer for health + biology YT Channel</p> <p>(Only message if wanting role long term, and want to begin fast) </p> <p>(Canva skills, creativity and science knowledge needed)</p> <p>Hi! We make educational content about the human body, health and the biology behind both, and I am hiring one person to own what we publish and why.</p> <p>(Ideally UI/UX back",
-      "tags": [
-        "marketing"
-      ],
-      "postedAt": "2026-11-10T01:49:45.000Z",
+      "postedAt": "2026-11-11T14:22:52.000Z",
       "kind": "request-for-work",
       "score": 57,
       "verified": false
