@@ -1,20 +1,36 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-12T15:57:54.381Z",
+  "generatedAt": "2026-11-13T15:23:10.112Z",
   "results": [
     {
-      "id": "reddit:8446e12a5b3abeb9",
+      "id": "reddit:a4ce0c838f0e0aa5",
       "source": "Reddit r/forhire",
-      "title": "[HIRING] $200/month, remote Content Board Designer for beauty + biology YT Channel",
+      "title": "[Hiring] Social Media & Creative Creator",
       "company": "Autorul anunțului (neverificat)",
-      "url": "https://www.reddit.com/r/forhire/comments/1xtwut5/hiring_200month_remote_content_board_designer_for/",
-      "description": "<!-- SC_OFF --><div class=\"md\"><p>$200USD/month, remote) Content Board Designer for health + biology YT Channel</p> <p>(Only message if wanting role long term, and want to begin fast) </p> <p>(Canva skills, creativity and science knowledge needed)</p> <p>Hi! We make educational content about the human body, health and the biology behind both, and I am hiring one person to own what we publish and why.</p> <p>(Ideally UI/UX back",
+      "url": "https://www.reddit.com/r/forhire/comments/1xv5vlo/hiring_social_media_creative_creator/",
+      "description": "<!-- SC_OFF --><div class=\"md\"><p>We're a small social club in Bengaluru looking for someone to run our Social Media and Marketing: reels, carousels and stories, UGC. Budget: ₹10,000–15,000 a month plus growth bonuses. Apply here: <a href=\"https://docs.google.com/forms/d/e/1FAIpQLSeNicVJAtr0gKurg2v0o7OLDWnZ0CC6PqnAHCaRpgVWOKP48A/viewform?usp=sharing&amp;ouid=115304693665978324383\">Link</a></p> </div><!-- SC_ON --> submitted by",
       "tags": [
         "marketing"
       ],
-      "postedAt": "2026-11-11T23:17:10.000Z",
+      "postedAt": "2026-11-13T11:52:40.000Z",
       "kind": "request-for-work",
       "score": 57,
+      "verified": false
+    },
+    {
+      "id": "hn:fa5a432c4f2c56c0",
+      "source": "Hacker News",
+      "title": "[dead]",
+      "company": "Cerere posibilă (neconfirmată)",
+      "url": "https://news.ycombinator.com/item?id=50480098",
+      "description": "What To Expect: We are looking for a Junior Application Security Engineer (all genders) to join the Application Security circle of our IT-Security unit, dedicated to protecting our online shop, our corporate systems and our customers. In this role, you will hack internal systems, design and implement security measures to safeguard our infrastructure, applications, and data. You will work closely with other security engineers, ",
+      "tags": [
+        "commerce",
+        "design"
+      ],
+      "postedAt": "2026-11-13T08:22:41.000Z",
+      "kind": "lead-signal",
+      "score": 42,
       "verified": false
     }
   ],
