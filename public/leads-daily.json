@@ -1,36 +1,50 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-13T15:23:10.112Z",
+  "generatedAt": "2026-11-14T14:08:25.345Z",
   "results": [
     {
-      "id": "reddit:a4ce0c838f0e0aa5",
+      "id": "reddit:14a5969f58aa7a5f",
       "source": "Reddit r/forhire",
-      "title": "[Hiring] Social Media & Creative Creator",
+      "title": "[Hiring] Looking for a Developer: Real-Time Cricket Livestream Monitoring Bot",
       "company": "Autorul anunțului (neverificat)",
-      "url": "https://www.reddit.com/r/forhire/comments/1xv5vlo/hiring_social_media_creative_creator/",
-      "description": "<!-- SC_OFF --><div class=\"md\"><p>We're a small social club in Bengaluru looking for someone to run our Social Media and Marketing: reels, carousels and stories, UGC. Budget: ₹10,000–15,000 a month plus growth bonuses. Apply here: <a href=\"https://docs.google.com/forms/d/e/1FAIpQLSeNicVJAtr0gKurg2v0o7OLDWnZ0CC6PqnAHCaRpgVWOKP48A/viewform?usp=sharing&amp;ouid=115304693665978324383\">Link</a></p> </div><!-- SC_ON --> submitted by",
+      "url": "https://www.reddit.com/r/forhire/comments/1xw2j0g/hiring_looking_for_a_developer_realtime_cricket/",
+      "description": "<!-- SC_OFF --><div class=\"md\"><p>Hi, I’m looking for a Python developer to build a real-time Cricket Vision bot.</p> <p>I want to send a YouTube cricket livestream link to a Telegram bot, which then monitors the stream and instantly sends ball-by-ball updates, including runs scored, wickets and other key events, as they happen.</p> <p>Speed and accuracy are essential. Ideally, the bot should use video, scoreboard and audio an",
       "tags": [
-        "marketing"
+        "software"
       ],
-      "postedAt": "2026-11-13T11:52:40.000Z",
+      "postedAt": "2026-11-14T13:34:01.000Z",
       "kind": "request-for-work",
       "score": 57,
       "verified": false
     },
     {
-      "id": "hn:fa5a432c4f2c56c0",
-      "source": "Hacker News",
-      "title": "[dead]",
-      "company": "Cerere posibilă (neconfirmată)",
-      "url": "https://news.ycombinator.com/item?id=50480098",
-      "description": "What To Expect: We are looking for a Junior Application Security Engineer (all genders) to join the Application Security circle of our IT-Security unit, dedicated to protecting our online shop, our corporate systems and our customers. In this role, you will hack internal systems, design and implement security measures to safeguard our infrastructure, applications, and data. You will work closely with other security engineers, ",
+      "id": "reddit:addde3fde17e05fb",
+      "source": "Reddit r/forhire",
+      "title": "[Hiring]Looking for Freelance Marketing Partners",
+      "company": "Autorul anunțului (neverificat)",
+      "url": "https://www.reddit.com/r/forhire/comments/1xvz6bw/hiringlooking_for_freelance_marketing_partners/",
+      "description": "<!-- SC_OFF --><div class=\"md\"><p>Hiring: Outreach / Marketing Professionals</p> <p>Looking to connect with people experienced in client acquisition and outreach marketing, particularly in the tech industry (Web3, SaaS, Software Development, etc.).</p> <p>If you've worked on generating leads, booking meetings, or converting prospects into paying clients, I'd love to hear about your experience.</p> <p>A few things I'd like to k",
       "tags": [
-        "commerce",
-        "design"
+        "marketing"
       ],
-      "postedAt": "2026-11-13T08:22:41.000Z",
-      "kind": "lead-signal",
-      "score": 42,
+      "postedAt": "2026-11-14T10:25:59.000Z",
+      "kind": "request-for-work",
+      "score": 57,
+      "verified": false
+    },
+    {
+      "id": "reddit:702c7335968e2fe7",
+      "source": "Reddit r/forhire",
+      "title": "[Hiring] Creative OF/Instagram/ Tik tok Content Creator / Visual Producer",
+      "company": "Autorul anunțului (neverificat)",
+      "url": "https://www.reddit.com/r/forhire/comments/1xvu7y9/hiring_creative_ofinstagram_tik_tok_content/",
+      "description": "<!-- SC_OFF --><div class=\"md\"><p>I’m looking for an independent, creative visual producer with a great eye for aesthetics to help elevate my brand content.</p> <p><strong>🗂️Key Responsibilities</strong>:</p> <p>Take raw video/photo content and create high-converting promotional teasers, aesthetic screenshots, short loops, custom GIFs, and stickers.<br/> Design engaging visual assets for posts and direct messages that drive i",
+      "tags": [
+        "marketing"
+      ],
+      "postedAt": "2026-11-14T05:24:01.000Z",
+      "kind": "request-for-work",
+      "score": 57,
       "verified": false
     }
   ],
