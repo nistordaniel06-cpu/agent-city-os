@@ -1,48 +1,18 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-14T14:08:25.345Z",
+  "generatedAt": "2026-11-15T14:44:40.737Z",
   "results": [
     {
-      "id": "reddit:14a5969f58aa7a5f",
+      "id": "reddit:10564f9794a56a96",
       "source": "Reddit r/forhire",
-      "title": "[Hiring] Looking for a Developer: Real-Time Cricket Livestream Monitoring Bot",
+      "title": "[Hiring] (Online) Part-time Backend Engineer, Node/TypeScript + MongoDB - $3,500/month for 30h/week",
       "company": "Autorul anunțului (neverificat)",
-      "url": "https://www.reddit.com/r/forhire/comments/1xw2j0g/hiring_looking_for_a_developer_realtime_cricket/",
-      "description": "<!-- SC_OFF --><div class=\"md\"><p>Hi, I’m looking for a Python developer to build a real-time Cricket Vision bot.</p> <p>I want to send a YouTube cricket livestream link to a Telegram bot, which then monitors the stream and instantly sends ball-by-ball updates, including runs scored, wickets and other key events, as they happen.</p> <p>Speed and accuracy are essential. Ideally, the bot should use video, scoreboard and audio an",
+      "url": "https://www.reddit.com/r/forhire/comments/1xwsin6/hiring_online_parttime_backend_engineer/",
+      "description": "<!-- SC_OFF --><div class=\"md\"><p>AdKit is a small bootstrapped SaaS (solo founder + 1). People use it to run their Meta and Google ads from their AI agents through MCP. I'm looking for a part-time backend engineer to work on the engineering queue, so I can focus on growth.</p> <p><strong>Details</strong></p> <ul> <li>Pay: $3,500/month for 30h/week (about $27/h), contractor, ongoing</li> <li>Location: fully remote, with some o",
       "tags": [
         "software"
       ],
-      "postedAt": "2026-11-14T13:34:01.000Z",
-      "kind": "request-for-work",
-      "score": 57,
-      "verified": false
-    },
-    {
-      "id": "reddit:addde3fde17e05fb",
-      "source": "Reddit r/forhire",
-      "title": "[Hiring]Looking for Freelance Marketing Partners",
-      "company": "Autorul anunțului (neverificat)",
-      "url": "https://www.reddit.com/r/forhire/comments/1xvz6bw/hiringlooking_for_freelance_marketing_partners/",
-      "description": "<!-- SC_OFF --><div class=\"md\"><p>Hiring: Outreach / Marketing Professionals</p> <p>Looking to connect with people experienced in client acquisition and outreach marketing, particularly in the tech industry (Web3, SaaS, Software Development, etc.).</p> <p>If you've worked on generating leads, booking meetings, or converting prospects into paying clients, I'd love to hear about your experience.</p> <p>A few things I'd like to k",
-      "tags": [
-        "marketing"
-      ],
-      "postedAt": "2026-11-14T10:25:59.000Z",
-      "kind": "request-for-work",
-      "score": 57,
-      "verified": false
-    },
-    {
-      "id": "reddit:702c7335968e2fe7",
-      "source": "Reddit r/forhire",
-      "title": "[Hiring] Creative OF/Instagram/ Tik tok Content Creator / Visual Producer",
-      "company": "Autorul anunțului (neverificat)",
-      "url": "https://www.reddit.com/r/forhire/comments/1xvu7y9/hiring_creative_ofinstagram_tik_tok_content/",
-      "description": "<!-- SC_OFF --><div class=\"md\"><p>I’m looking for an independent, creative visual producer with a great eye for aesthetics to help elevate my brand content.</p> <p><strong>🗂️Key Responsibilities</strong>:</p> <p>Take raw video/photo content and create high-converting promotional teasers, aesthetic screenshots, short loops, custom GIFs, and stickers.<br/> Design engaging visual assets for posts and direct messages that drive i",
-      "tags": [
-        "marketing"
-      ],
-      "postedAt": "2026-11-14T05:24:01.000Z",
+      "postedAt": "2026-11-15T10:45:08.000Z",
       "kind": "request-for-work",
       "score": 57,
       "verified": false
