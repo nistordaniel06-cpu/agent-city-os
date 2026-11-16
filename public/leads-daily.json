@@ -1,20 +1,21 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-15T14:44:40.737Z",
+  "generatedAt": "2026-11-16T16:59:42.379Z",
   "results": [
     {
-      "id": "reddit:10564f9794a56a96",
-      "source": "Reddit r/forhire",
-      "title": "[Hiring] (Online) Part-time Backend Engineer, Node/TypeScript + MongoDB - $3,500/month for 30h/week",
-      "company": "Autorul anunțului (neverificat)",
-      "url": "https://www.reddit.com/r/forhire/comments/1xwsin6/hiring_online_parttime_backend_engineer/",
-      "description": "<!-- SC_OFF --><div class=\"md\"><p>AdKit is a small bootstrapped SaaS (solo founder + 1). People use it to run their Meta and Google ads from their AI agents through MCP. I'm looking for a part-time backend engineer to work on the engineering queue, so I can focus on growth.</p> <p><strong>Details</strong></p> <ul> <li>Pay: $3,500/month for 30h/week (about $27/h), contractor, ongoing</li> <li>Location: fully remote, with some o",
+      "id": "hn:fa5a432c4f2c56c0",
+      "source": "Hacker News",
+      "title": "[dead]",
+      "company": "Cerere posibilă (neconfirmată)",
+      "url": "https://news.ycombinator.com/item?id=50480098",
+      "description": "What To Expect: We are looking for a Junior Application Security Engineer (all genders) to join the Application Security circle of our IT-Security unit, dedicated to protecting our online shop, our corporate systems and our customers. In this role, you will hack internal systems, design and implement security measures to safeguard our infrastructure, applications, and data. You will work closely with other security engineers, ",
       "tags": [
-        "software"
+        "commerce",
+        "design"
       ],
-      "postedAt": "2026-11-15T10:45:08.000Z",
-      "kind": "request-for-work",
-      "score": 57,
+      "postedAt": "2026-11-13T08:22:41.000Z",
+      "kind": "lead-signal",
+      "score": 42,
       "verified": false
     }
   ],
